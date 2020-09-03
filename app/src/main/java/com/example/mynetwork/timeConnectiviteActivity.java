@@ -79,13 +79,6 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacem
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
-// classes needed to initialize map
-// classes needed to add the location component
-// classes needed to add a marker
-// classes to calculate a route
-
-// classes needed to launch navigation UI
-
 
 public class timeConnectiviteActivity extends AppCompatActivity implements OnMapReadyCallback,PermissionsListener, MapboxMap.OnMapClickListener {
 
@@ -130,6 +123,8 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
     TextView txt_time_connectivite ;
     @BindView(R.id.img_speech)
     ImageView img_speech;
+    @BindView(R.id.img_navigation)
+    ImageView img_navigation;
 
     String txt_distance,txt_temps;
 
@@ -159,13 +154,14 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
         TTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onInit(int status) {
                 if (status == TextToSpeech.SUCCESS) {
-                    //printOutSupportedLanguages();
+                    printOutSupportedLanguages();
                     TTS.setSpeechRate((float) 0.8);
-                    int result= TTS.setLanguage(Locale.ENGLISH);
-
+                    //int result= TTS.setLanguage(new Locale("fr", "FR"));
+                    int result= TTS.setLanguage(Locale.getDefault());
                     if (result == TextToSpeech.LANG_MISSING_DATA){
                         Log.e("TTS", "MISSING_DATA");
                     }
@@ -203,9 +199,11 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
         Set<Locale> supportedLanguages = TTS.getAvailableLanguages();
         if(supportedLanguages!= null) {
             for (Locale lang : supportedLanguages) {
-                Log.e("TTS", "Supported Language: " + lang);
+                Log.e("TTS", "Supported Language: " + supportedLanguages.size() + lang);
             }
         }
+        Log.e("tts", String.valueOf(Locale.getAvailableLocales()));
+
     }
     private void initView() {
         //init View
@@ -477,7 +475,6 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
 
     }
 
-
     private void addPlaceIconSymbolLayer(@NonNull Style loadedMapStyle) {
         loadedMapStyle.addImage("symbolIconId", BitmapFactory.decodeResource(
                 timeConnectiviteActivity.this.getResources(), R.drawable.mapbox_marker_icon_default));
@@ -538,6 +535,7 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
     @Override
     protected void onPause() {
         super.onPause();
+        TTS.stop();
         mapView.onPause();
     }
 
@@ -557,6 +555,7 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
     protected void onDestroy() {
         super.onDestroy();
         img_speech_tag=false;
+        TTS.shutdown();
         compositeDisposable.clear();
         mapView.onDestroy();
     }
