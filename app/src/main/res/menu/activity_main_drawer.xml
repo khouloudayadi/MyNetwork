@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_network"
+            android:icon="@drawable/ic_network_24"
+            android:title="@string/network" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_test_debit"
+            android:icon="@drawable/ic_test_24"
+            android:title="@string/tester_debit" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_temps_connectivite"
+            android:icon="@drawable/ic_time_24"
+            android:title="@string/time" />
+    </group>
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_carte_couverture"
+            android:icon="@drawable/ic_carte_couverture_24"
+            android:title="@string/carte_couverture" />
+    </group>
+
+    <item android:title="@string/communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_share_24"
+                android:title="@string/share"/>
+            <item
+                android:id="@+id/nav_apropos"
+                android:icon="@drawable/ic_info_outline_24"
+                android:title="@string/apropos" />
+        </menu>
+
+    </item>
+
+
+
+</menu>

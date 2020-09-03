@@ -1,0 +1,41 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url "http://jcenter.bintray.com"}
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.0.1"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://mapbox.bintray.com/mapbox' }
+        jcenter{ url "http://jcenter.bintray.com/" }
+        maven { url "https://jitpack.io" }
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                username = 'mapbox'
+                // Use the secret token you stored in gradle.properties as the password
+                password = project.properties['pk.eyJ1IjoiYXlhZGlraG91bG91ZCIsImEiOiJja2Q1dWthM3cwNGJpMnBzYzZpNnRqc2t4In0.Lmj_vPp5beqQhKW-2ktX0w'] ?: ""
+            }
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

@@ -1,0 +1,69 @@
+<resources>
+    <string name="app_name">Mon Réseau</string>
+
+    //navigation drawer
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    //menu navigation
+    <string name="communicate">Communicate</string>
+    <string name="tester_debit">Test The Rate</string>
+    <string name="network">My Network</string>
+    <string name="time">Connectivity uptime</string>
+    <string name="carte_couverture">Map Cover</string>
+    <string name="apropos">About</string>
+    <string name="share">Share</string>
+    //liste usage
+    <string name="liste_qualit_usage">List of the quality of uses</string>
+    <string name="appel">Calls, SMS</string>
+    <string name="navigation_web">Web browsing</string>
+    <string name="email">Chat, Emails without Attachment</string>
+    <string name="appels_video">Video calls (HD streaming)</string>
+    <string name="musique">Online Music</string>
+    <string name="email_piece">MMS, Emails with Attachment</string>
+    <string name="jeux">Games Services</string>
+
+    //txt view
+    <string name="nom_operateur" translatable="false">Orange TN</string>
+    <string name="niveau_couverture">Good Coverage</string>
+    <string name="find_cell">Find nearest BTS</string>
+    <string name="hote_pb">There was a problem getting the location of the host</string>
+    <string name="Redmarrer_le_test">Restart the test</string>
+    <string name="Erreur_de_téléchargement">Download error ...</string>
+    <string name="Erreur_d_envoi">Error sending ...</string>
+    <string name="Erreur_ping">Ping error ...</string>
+    <string name="Sub_type">Network subtype :</string>
+    <string name="non_connecte">Not connected to the internet</string>
+    <string name="connecetd_wifi">Connected by Wi-Fi</string>
+
+
+    //toast
+    <string name="Pas_de_connection">Pas de connexion ...</string>
+    <string name="check_connection">Check your Internet connection!</string>
+    <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality</string>
+    <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
+
+    //btn
+    <string name="btn_test">Start Test</string>
+    <string name="btn_redémarrer_le_test">Restart the test</string>
+    <string name="ok">Activate Location</string>
+    <string name="title_alert_gps">No access to position</string>
+    <string name="close">Close</string>
+    <string name="meilleur_serveur">Selection of the best server ...</string>
+    <string name="hoste_location">Host location: %s [Distance: %s km]</string>
+
+    //alert
+    <string name="msg_alert_gps_1">In order to use the application properly you need to enable GPS of your device</string>
+    <string name="msg_alert_gps">You need to turn on GPS to add new results to the map</string>
+    <string name="alert_wifi_title">You are connected by Wi-Fi!</string>
+    <string name="alert_wifi_text">please activate your mobile data !</string>
+    <string name="Permission_Denied">Permission Denied</string>
+    <string name="permission_title">Permission to access device location is permanently denied. you need to go to setting to allow the permission.</string>
+    <string name="cancel_alert">Cancel</string>
+    <string name="txt_unknown_network">Unknown network</string>
+    <string name="wating_location">Waiting for get location ...</string>
+
+    //mapbox
+    <string name="access_token" translatable="false">pk.eyJ1IjoiYXlhZGlraG91bG91ZCIsImEiOiJja2Q1dWthM3cwNGJpMnBzYzZpNnRqc2t4In0.Lmj_vPp5beqQhKW-2ktX0w</string>
+    <string name="tts">you have %s and %s kilometer</string>
+
+</resources>

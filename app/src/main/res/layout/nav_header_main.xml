@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:layout_marginTop="17dp"
+    android:gravity="center_vertical"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_margin="5dp"
+        android:weightSum="10"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="70dp"
+            android:layout_marginLeft="5dp"
+            android:layout_height="80dp"
+            app:srcCompat="@drawable/app_icon" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="9"
+            android:orientation="vertical"
+            android:layout_marginLeft="18dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/network"
+                android:textSize="@dimen/text_size"
+                android:textColor="@color/app_icon_gray"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/txt_nom_operateur"
+                android:text="@string/nom_operateur"
+                android:layout_marginTop="5dp"
+                android:textStyle="italic"
+                android:textSize="@dimen/text_sub_size"
+                android:textColor="@color/colorPrimary"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

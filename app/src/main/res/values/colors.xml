@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF982B</color>
+    <color name="colorPrimaryDark">#F47F03</color>
+    <color name="colorAccent">#232323</color>
+    <color name="divider">#f7f5f4</color>
+    <color name="backgroung_icon_rx">#949494</color>
+    <color name="app_icon_gray">#7C6D6D</color>
+    <color name="background_test">#FDFDFD</color>
+    <color name="cardView">#E4E4E4</color>
+    <color name="color_text">#494949</color>
+    <color name="color_gray_icon">#7a6b6b</color>
+</resources>
