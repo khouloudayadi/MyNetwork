@@ -34,7 +34,7 @@ public class SplashScreen extends AppCompatActivity {
                         new Handler().postDelayed(new Runnable(){
                             @Override
                             public void run(){
-                                startActivity(new Intent(SplashScreen.this, HomeActivity.class));
+                                startActivity(new Intent(SplashScreen.this, MainActivity.class));
                                 finish();
                             }
                         },900);
@@ -45,7 +45,12 @@ public class SplashScreen extends AppCompatActivity {
                             AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
                             builder.setTitle(R.string.Permission_Denied)
                                     .setMessage(R.string.permission_title)
-                                    .setNegativeButton(R.string.cancel_alert, null)
+                                    .setNegativeButton(R.string.cancel_alert, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            finish();
+                                        }
+                                    })
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {

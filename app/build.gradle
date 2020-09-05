@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "30.0.2"
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.example.mynetwork"
         minSdkVersion 16
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -95,4 +95,7 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-places-v9:0.12.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.43.0-alpha.1'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:5.4.1'
+
+    //httpclient
+    implementation 'org.apache.httpcomponents:httpclient:4.5.10'
 }

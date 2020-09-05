@@ -126,11 +126,19 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
     @BindView(R.id.img_navigation)
     ImageView img_navigation;
 
+
     String txt_distance,txt_temps;
 
     @OnClick(R.id.img_close)
     void close_interface(){
         cardView_time.setVisibility(View.GONE);
+    }
+
+    @OnClick(R.id.img_navigation)
+    void NAV_interface(){
+
+        startActivity(new Intent(this, MarkerFollowingRouteActivity.class));
+        finish();
     }
 
     @OnClick(R.id.fab_my_location)
@@ -287,7 +295,7 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
             source.setGeoJson(Feature.fromGeometry(destinationPoint));
         }
 
-        getRoute(originPoint, destinationPoint);
+        //getRoute(originPoint, destinationPoint);
         getTimeConnectivite(start_lat,start_lon,end_lat,end_lon,vitesse);
         return true;
     }
@@ -438,32 +446,32 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(predict -> {
-                           if(predict.isSuccess()){
-                               cardView_time.setVisibility(View.VISIBLE);
+                            if(predict.isSuccess()){
+                                cardView_time.setVisibility(View.VISIBLE);
 
-                               double dist = Double.parseDouble(predict.getDistance());
+                                double dist = Double.parseDouble(predict.getDistance());
                                /* BigDecimal bd = BigDecimal.valueOf(dist / 1000.0);
                                bd = bd.setScale(0, RoundingMode.HALF_UP);
                                txt_distance_connectivite.setText(new StringBuilder(String.valueOf(bd.intValue())).append(" Km"));*/
-                               txt_distance_connectivite.setText(String.format(" %s km", new DecimalFormat("#.##").format(dist / 1000)));
-                               txt_distance = String.valueOf(new DecimalFormat("#.##").format(dist / 1000));//KM
+                                txt_distance_connectivite.setText(String.format(" %s km", new DecimalFormat("#.##").format(dist / 1000)));
+                                txt_distance = String.valueOf(new DecimalFormat("#.##").format(dist / 1000));//KM
 
-                               double time_sec = Double.parseDouble(predict.getResult());
-                               long time_min = TimeUnit.SECONDS.toMinutes((long) time_sec);
+                                double time_sec = Double.parseDouble(predict.getResult());
+                                long time_min = TimeUnit.SECONDS.toMinutes((long) time_sec);
 
-                               if(time_sec < 60){
-                                   txt_time_connectivite.setText(new StringBuilder(String.valueOf((long) time_sec)).append(" sec"));
-                                   txt_temps= String.valueOf(new StringBuilder(String.valueOf((long) time_sec)).append(" seconde"));
-                               }
-                               else{
-                                   txt_time_connectivite.setText(new StringBuilder(String.valueOf(time_min)).append(" min"));
-                                   txt_temps= String.valueOf(new StringBuilder(String.valueOf(time_min)).append(" minute"));
-                               }
-                           }
-                           else{
-                               dialog.dismiss();
-                               Toast.makeText(timeConnectiviteActivity.this,predict.getMessage(),Toast.LENGTH_SHORT).show();
-                           }
+                                if(time_sec < 60){
+                                    txt_time_connectivite.setText(new StringBuilder(String.valueOf((long) time_sec)).append(" sec"));
+                                    txt_temps= String.valueOf(new StringBuilder(String.valueOf((long) time_sec)).append(" seconde"));
+                                }
+                                else{
+                                    txt_time_connectivite.setText(new StringBuilder(String.valueOf(time_min)).append(" min"));
+                                    txt_temps= String.valueOf(new StringBuilder(String.valueOf(time_min)).append(" minute"));
+                                }
+                            }
+                            else{
+                                dialog.dismiss();
+                                Toast.makeText(timeConnectiviteActivity.this,predict.getMessage(),Toast.LENGTH_SHORT).show();
+                            }
                             dialog.dismiss();
                         },
                         throwable -> {
@@ -561,6 +569,8 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
     }
 
 }
+
+
 
 
 

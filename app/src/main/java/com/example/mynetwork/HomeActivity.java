@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.telephony.CellInfo;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -49,10 +51,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dmax.dialog.SpotsDialog;
 
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private TelephonyManager telephonyManager;
+
 
     private ConnectivityManager connectivityManager;
-    private TelephonyManager telephonyManager;
     private PhoneStateListener ConnectionStateListener;
 
     private List<uses> listeUses = new ArrayList<>();
@@ -98,6 +104,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
     }
 
+    @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +138,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         recycler_usage.addItemDecoration(new DividerItemDecoration(this,layoutManager.getOrientation()));
     }
 
+    @RequiresApi(api = JELLY_BEAN_MR1)
     private void init() {
         dialog =  new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
         telephonyManager = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
@@ -170,6 +178,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @RequiresApi(api = JELLY_BEAN_MR1)
     @SuppressLint("MissingPermission")
     private void checknetwork() {
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -240,6 +249,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public void refresh(int milliseconds){
         handler = new Handler();
         runnable = new Runnable() {
+            @RequiresApi(api = JELLY_BEAN_MR1)
             @Override
             public void run() {
                 checknetwork();
@@ -248,6 +258,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         handler.postDelayed(runnable, milliseconds);
     }
 
+    @RequiresApi(api = JELLY_BEAN_MR1)
     private void displayTypeNetwork() {
         txt_nom_operateur.setText(carrierName);
         txt_couverture.setText(R.string.niveau_couverture);
