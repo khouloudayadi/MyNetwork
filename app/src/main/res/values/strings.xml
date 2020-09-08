@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mon Réseau</string>
+    <string name="app_name" translatable="false">Mon Réseau</string>
 
     //navigation drawer
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
@@ -12,6 +12,7 @@
     <string name="carte_couverture">Map Cover</string>
     <string name="apropos">About</string>
     <string name="share">Share</string>
+
     //liste usage
     <string name="liste_qualit_usage">List of the quality of uses</string>
     <string name="appel">Calls, SMS</string>
@@ -23,8 +24,17 @@
     <string name="jeux">Games Services</string>
 
     //txt view
-    <string name="nom_operateur" translatable="false">Orange TN</string>
-    <string name="niveau_couverture">Good Coverage</string>
+    <string name="signal_strength_excellent">Signal Strength Excellent</string>
+    <string name="no_signal">No signal</string>
+    <string name="desc_no_signal">Disconnection</string>
+    <string name="signal_strength_good">Signal Strength Good</string>
+    <string name="signal_strength_fair">Signal Strength Faire</string>
+    <string name="signal_strength_poor">Signal Strength Poor</string>
+    <string name="desc_signal_excellent">Strong signal with maximum data speeds</string>
+    <string name="desc_signal_good">Strong signal with good data speeds</string>
+    <string name="desc_signal_fair">Fair but useful, fast and reliable data speeds may be attained, but marginal data with drop-outs is possible</string>
+    <string name="desc_signal_poor">Performance will drop drastically</string>
+
     <string name="find_cell">Find nearest BTS</string>
     <string name="hote_pb">There was a problem getting the location of the host</string>
     <string name="Redmarrer_le_test">Restart the test</string>
@@ -34,8 +44,9 @@
     <string name="Sub_type">Network subtype :</string>
     <string name="non_connecte">Not connected to the internet</string>
     <string name="connecetd_wifi">Connected by Wi-Fi</string>
-
-
+    <string name="ping">PING</string>
+    <string name="dowload">DOWNLOAD</string>
+    <string name="upload">UPLOAD</string>
     //toast
     <string name="Pas_de_connection">Pas de connexion ...</string>
     <string name="check_connection">Check your Internet connection!</string>

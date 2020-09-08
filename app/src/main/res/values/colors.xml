@@ -10,4 +10,11 @@
     <color name="cardView">#E4E4E4</color>
     <color name="color_text">#494949</color>
     <color name="color_gray_icon">#7a6b6b</color>
+    <color name="signal_excellent">#6ACE61</color>
+    <color name="signal_good">#FBFB43</color>
+    <color name="signal_fair">#EC031D</color>
+    <color name="signal_Poor">#AB0312</color>
+    <color name="no_signal">#494949</color>
+
+
 </resources>

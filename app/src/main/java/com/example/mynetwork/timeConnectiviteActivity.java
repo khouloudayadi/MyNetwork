@@ -81,8 +81,6 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
 
 public class timeConnectiviteActivity extends AppCompatActivity implements OnMapReadyCallback,PermissionsListener, MapboxMap.OnMapClickListener {
-
-
     private MapboxMap map;
     private PermissionsManager permissionsManager;
     LocationComponent locationComponent;
@@ -159,8 +157,10 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
 
         initView();
         init();
+
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
         TTS = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -201,6 +201,7 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
             }
         });
     }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void printOutSupportedLanguages()  {
         // Supported Languages
@@ -213,6 +214,7 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
         Log.e("tts", String.valueOf(Locale.getAvailableLocales()));
 
     }
+
     private void initView() {
         //init View
         ButterKnife.bind(this);
@@ -225,7 +227,6 @@ public class timeConnectiviteActivity extends AppCompatActivity implements OnMap
 
     private void init() {
         myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
-
         locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         assert locationManager != null;
 

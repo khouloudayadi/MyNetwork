@@ -57,7 +57,7 @@
                 android:tint="@color/colorPrimary"
                 app:fabSize="mini"
                 app:backgroundTint="@android:color/white"
-                app:srcCompat="@drawable/ic_my_location_24"/>
+                android:src="@drawable/ic_my_location_24"/>
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView_Time"
                 android:layout_marginTop="10dp"

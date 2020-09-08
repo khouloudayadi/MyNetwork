@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Mon Réseau</string>
     <string name="communicate">Communiquer</string>
     <string name="tester_debit">Test de Débit</string>
     <string name="network">Mon Réseau</string>
@@ -16,7 +15,17 @@
     <string name="musique">Musique en Ligne</string>
     <string name="email_piece">MMS, Emails avec Pièce Jointe</string>
     <string name="jeux">Services de Jeux</string>
-    <string name="niveau_couverture">Bonne Couverture</string>
+    <string name="no_signal">Pas de signal</string>
+    <string name="desc_no_signal">Coupure du signal</string>
+    <string name="signal_strength_excellent">Force du Signal Excellent</string>
+    <string name="signal_strength_good">Force du Signal Bien</string>
+    <string name="signal_strength_fair">Force du Signal Juste</string>
+    <string name="signal_strength_poor">Force du Signal Pauvres</string>
+    <string name="desc_signal_excellent">Signal fort avec des vitesses de données maximales</string>
+    <string name="desc_signal_good">Signal fort avec de bonnes vitesses de données</string>
+    <string name="desc_signal_fair">Des vitesses de données justes mais utiles, rapides et fiables peuvent être atteintes, mais des données marginales avec des abandons sont possibles</string>
+    <string name="desc_signal_poor">Les performances chuteront considérablement</string>
+
     <string name="find_cell">Trouver l\'antenne la plus proche</string>
     <string name="hote_pb">Il y avait un problème pour obtenir l\'emplacement de l\'hôte</string>
     <string name="Redmarrer_le_test">Redémarrer le test</string>
@@ -47,4 +56,7 @@
     <string name="permission_title">L\'autorisation d\'accéder à l\'emplacement de l\'appareil est définitivement refusée. vous devez accéder au paramètre pour autoriser l\'autorisation.</string>
     <string name="tts">il vous reste %s et %s kilometer</string>
     <string name="wating_location">En attente de la localisation ...</string>
+    <string name="ping">Temps de réponse</string>
+    <string name="dowload">Descendant</string>
+    <string name="upload">Montant</string>
 </resources>

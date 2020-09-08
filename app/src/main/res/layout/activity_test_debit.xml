@@ -56,7 +56,8 @@
                         android:textAlignment="center"
                         android:textColor="@android:color/holo_blue_dark"
                         android:textSize="13.5sp"
-                        android:textStyle="normal|bold" />
+                        android:textStyle="normal|bold"
+                        android:gravity="center_horizontal" />
                 </LinearLayout>
                 <TextView
                     android:id="@+id/txt_ping"
@@ -66,7 +67,8 @@
                     android:layout_marginLeft="10dp"
                     android:textAlignment="center"
                     android:textColor="@android:color/black"
-                    android:textSize="12sp" />
+                    android:textSize="13sp"
+                    android:gravity="center_horizontal" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
@@ -95,7 +97,8 @@
                         android:textColor="@android:color/holo_blue_dark"
                         android:textSize="13.5sp"
                         android:layout_marginLeft="4dp"
-                        android:textStyle="normal|bold" />
+                        android:textStyle="normal|bold"
+                        android:gravity="center_horizontal" />
                 </LinearLayout>
 
                 <TextView
@@ -106,7 +109,8 @@
                     android:layout_marginLeft="10dp"
                     android:textAlignment="center"
                     android:textColor="@android:color/black"
-                    android:textSize="12sp" />
+                    android:textSize="13sp"
+                    android:gravity="center_horizontal" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
@@ -135,7 +139,8 @@
                         android:textAlignment="center"
                         android:textColor="@android:color/holo_blue_dark"
                         android:textSize="13.5sp"
-                        android:textStyle="normal|bold" />
+                        android:textStyle="normal|bold"
+                        android:gravity="center_horizontal" />
                 </LinearLayout>
                 <TextView
                     android:id="@+id/uploadTextView"
@@ -145,7 +150,8 @@
                     android:layout_marginLeft="10dp"
                     android:textAlignment="center"
                     android:textColor="@android:color/black"
-                    android:textSize="12sp" />
+                    android:textSize="13sp"
+                    android:gravity="center_horizontal" />
             </LinearLayout>
         </LinearLayout>
         <RelativeLayout
@@ -197,5 +203,6 @@
                 android:fontFamily="sans-serif-condensed-light"
                 android:textSize="10sp" />
         </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>

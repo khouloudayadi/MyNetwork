@@ -28,10 +28,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     List<CellInfo> cellInfoList = null;
+    ArrayList<BaseStation> cellInfoListOrange = new ArrayList<BaseStation>();
     boolean error;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private TelephonyManager telephonyManager;
@@ -59,15 +61,26 @@ public class MainActivity extends AppCompatActivity {
             for (CellInfo cellInfo : cellInfoList) {
                 BaseStation bs = bindData(cellInfo);
                 Log.i("cell",bs.toString());
-                if(bs.getMnc() == 1) {
-                    Log.i("cellOrange",bs.toString());
+                if(bs.getMnc() == 1 && bs.getMcc() == 605) {
+                    if(bs.getLac() != 0 && bs.getCid() != 0){
+                        try {
+                            BaseStation cell = GetOpenCellID(bs);
+                            cellInfoListOrange.add(cell);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 else{
                     continue;
                 }
 
             }
-
+            for(BaseStation bs : cellInfoListOrange){
+                Log.i("cellOrange",bs.toString());
+            }
+            tv.setText(String.valueOf(cellInfoListOrange.size()));
+            Log.i("nbrCell", String.valueOf(cellInfoListOrange.size()));
         }
 
     }

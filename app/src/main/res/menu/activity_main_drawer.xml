@@ -14,12 +14,12 @@
             android:icon="@drawable/ic_test_24"
             android:title="@string/tester_debit" />
     </group>
-    <group android:checkableBehavior="single">
+    <!--<group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_temps_connectivite"
             android:icon="@drawable/ic_time_24"
             android:title="@string/time" />
-    </group>
+    </group>-->
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_carte_couverture"
