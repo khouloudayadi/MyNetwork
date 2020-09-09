@@ -11,8 +11,6 @@ import retrofit2.http.POST;
 
 public interface INetworkAPI {
 
-
-
     @Headers({"Content-Type:application/json"})
     @POST("predict")
     Observable<predict> getPredictTime(@Body JsonObject precictTime);

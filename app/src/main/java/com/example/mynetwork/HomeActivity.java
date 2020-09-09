@@ -94,7 +94,6 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -144,7 +143,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     //mapBox
     MapboxMap map;
-    SupportMapFragment mapFragment;
     PermissionsManager permissionsManager;
     LocationComponent locationComponent;
     LocationManager locationManager;
@@ -674,7 +672,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Common.cpt_wifi=0;
             Common.cpt_no_internet=0;
             displayTypeNetwork();
-            //getSignal();
+            getSignal();
             coordinator_layout_time.setVisibility(View.VISIBLE);
         }
         else {
@@ -768,6 +766,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         break;
                     case TelephonyManager.NETWORK_TYPE_LTE:
                         Picasso.get().load(R.drawable.lte).into(img_type_network);
+                        txt_sub_type_network.setVisibility(View.VISIBLE);
+                        txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " LTE");
                         //displayListeQuality("LTE");
                         break;
                     default:
