@@ -144,7 +144,7 @@ public class testDebitActivity extends AppCompatActivity {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         assert locationManager != null;
 
-        dialog = new SpotsDialog.Builder().setContext(this).setMessage("Waiting for get location ...").setCancelable(false).build();
+        dialog = new SpotsDialog.Builder().setContext(this).setMessage(R.string.wating_location).setCancelable(false).build();
         //enable GPS
         alertDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.title_alert_gps)

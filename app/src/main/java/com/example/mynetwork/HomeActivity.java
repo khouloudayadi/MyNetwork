@@ -94,6 +94,8 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -146,14 +148,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     PermissionsManager permissionsManager;
     LocationComponent locationComponent;
     LocationManager locationManager;
-
-    //Text to speech
-    TextToSpeech TTS;
-    String txt_distance,txt_temps;
-
-    //enable GPS
-    boolean GpsStatus;
-
     //search place
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private String geojsonPlaceLayerId = "geojsonPlaceLayerId";
@@ -163,41 +157,36 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
 
+    //Text to speech
+    TextToSpeech TTS;
+    String txt_distance,txt_temps;
+
+    //enable GPS
+    boolean GpsStatus;
+
     //var api rest
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     INetworkAPI myNetworkAPI;
+
     double start_lat,start_lon,end_lat,end_lon,vitesse;
+    String network,datetime;
 
     Toolbar toolbar;
+    @BindView(R.id.mapView) MapView mapView;
+    @BindView(R.id.img_type_network) ImageView img_type_network;
+    @BindView(R.id.txt_nom_operateur) TextView txt_nom_operateur;
+    @BindView(R.id.txt_sub_type_network) TextView txt_sub_type_network;
+    @BindView(R.id.img_drop_down) ImageView img_drop_down;
+    @BindView(R.id.txt_descr_signal) TextView txt_descr_signal;
+    @BindView(R.id.txt_signal) TextView txt_signal;
+    @BindView(R.id.layout_signal) LinearLayout layout_signal;
+    @BindView(R.id.cardView_Time) CardView cardView_time;
+    @BindView(R.id.txt_distance_connectivite) TextView txt_distance_connectivite ;
+    @BindView(R.id.txt_time_connectivite) TextView txt_time_connectivite ;
+    @BindView(R.id.img_speech) ImageView img_speech;
+    @BindView(R.id.img_navigation) ImageView img_navigation;
+    @BindView(R.id.coordinator_layout_time) CoordinatorLayout coordinator_layout_time;
 
-    @BindView(R.id.mapView)
-    MapView mapView;
-    @BindView(R.id.img_type_network)
-    ImageView img_type_network;
-    @BindView(R.id.txt_nom_operateur)
-    TextView txt_nom_operateur;
-    @BindView(R.id.txt_sub_type_network)
-    TextView txt_sub_type_network;
-    @BindView(R.id.img_drop_down)
-    ImageView img_drop_down;
-    @BindView(R.id.txt_descr_signal)
-    TextView txt_descr_signal;
-    @BindView(R.id.txt_signal)
-    TextView txt_signal;
-    @BindView(R.id.layout_signal)
-    LinearLayout layout_signal;
-    @BindView(R.id.cardView_Time)
-    CardView cardView_time;
-    @BindView(R.id.txt_distance_connectivite)
-    TextView txt_distance_connectivite ;
-    @BindView(R.id.txt_time_connectivite)
-    TextView txt_time_connectivite ;
-    @BindView(R.id.img_speech)
-    ImageView img_speech;
-    @BindView(R.id.img_navigation)
-    ImageView img_navigation;
-    @BindView(R.id.coordinator_layout_time)
-    CoordinatorLayout coordinator_layout_time;
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
         map.getStyle(new Style.OnStyleLoaded() {
@@ -211,6 +200,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @OnClick(R.id.img_close)
     void close_interface(){
         cardView_time.setVisibility(View.GONE);
+        if (navigationMapRoute != null) {
+            navigationMapRoute.removeRoute();
+        }
+        compositeDisposable.clear();
     }
 
     @OnClick(R.id.img_drop_down)
@@ -304,22 +297,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void initView() {
         ButterKnife.bind(this);
-    }
-
-    @RequiresApi(api = JELLY_BEAN_MR1)
-    private void init() {
-        myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
-
-        telephonyManager = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
-        carrierName = telephonyManager.getNetworkOperatorName();
-
-        locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-        assert locationManager != null;
-
         dialog =  new SpotsDialog.Builder().setContext(this).setCancelable(false).build();
 
         alert_no_conn = new KAlertDialog(this);
         alert_wifi = new KAlertDialog(this);
+
         alert_gps = new AlertDialog.Builder(this)
                 .setMessage(R.string.msg_alert_gps)
                 .setPositiveButton(R.string.ok, (dialog, i) -> {
@@ -332,6 +314,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     }
                 })
                 .create();
+    }
+
+    @RequiresApi(api = JELLY_BEAN_MR1)
+    private void init() {
+        myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
+
+        telephonyManager = (TelephonyManager)this.getSystemService(Context.TELEPHONY_SERVICE);
+        carrierName = telephonyManager.getNetworkOperatorName();
+
+        locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        assert locationManager != null;
     }
 
     @Override
@@ -389,6 +382,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
+
         dialog.show();
 
         Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
@@ -400,6 +394,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         start_lat = locationComponent.getLastKnownLocation().getLatitude();
         start_lon = locationComponent.getLastKnownLocation().getLongitude();
         vitesse = locationComponent.getLastKnownLocation().getSpeed();
+        datetime = String.valueOf(locationComponent.getLastKnownLocation().getTime());
+        /*Date date = new Date(locationComponent.getLastKnownLocation().getTime());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        datetime = dateFormat.format(date);*/
 
         GeoJsonSource source = map.getStyle().getSourceAs(geojsonPlaceLayerId);
         if (source != null) {
@@ -407,7 +405,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
 
         getRoute(originPoint, destinationPoint);
-        getTimeConnectivite(start_lat,start_lon,end_lat,end_lon,vitesse);
+        getTimeConnectivite(datetime,start_lat,start_lon,end_lat,end_lon,vitesse);
         return true;
     }
 
@@ -511,6 +509,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     start_lat = locationComponent.getLastKnownLocation().getLatitude();
                     start_lon = locationComponent.getLastKnownLocation().getLongitude();
                     vitesse = locationComponent.getLastKnownLocation().getSpeed();
+                    datetime = String.valueOf(locationComponent.getLastKnownLocation().getTime());
 
                     Point destinationPoint = Point.fromLngLat(((Point) selectedCarmenFeature.geometry()).longitude(),
                             ((Point) selectedCarmenFeature.geometry()).latitude());
@@ -526,13 +525,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                     .build()));
 
                     getRoute(originPoint, destinationPoint);
-                    getTimeConnectivite(start_lat,start_lon,end_lat,end_lon,vitesse);
+                    getTimeConnectivite(datetime,start_lat,start_lon,end_lat,end_lon,vitesse);
                 }
             }
         }
     }
 
-    private void getTimeConnectivite(double start_lat, double start_lon, double end_lat, double end_lon, double vitesse) {
+    private void getTimeConnectivite(String datetime,double start_lat, double start_lon, double end_lat, double end_lon, double vitesse) {
         Log.d("start_lat",String.valueOf(start_lat));
         Log.d("start_lon",String.valueOf(start_lon));
         Log.d("end_lat",String.valueOf(end_lat));
@@ -540,11 +539,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Log.d("speed",String.valueOf(vitesse));
 
         JsonObject predicTime = new JsonObject();
+        predicTime.addProperty("datetime",datetime);
         predicTime.addProperty("start_lat",start_lat);
         predicTime.addProperty("start_lon",start_lon);
         predicTime.addProperty("end_lat",end_lat);
         predicTime.addProperty("end_lon",end_lon);
         predicTime.addProperty("vitesse",vitesse);
+        predicTime.addProperty("network",network);
 
 
         if(compositeDisposable != null){
@@ -641,10 +642,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if(activeNetworkInfo == null ){
             Common.cpt_wifi=0;
             alert_wifi.dismiss();
+
             Picasso.get().load(R.drawable.ic_no_internet).into(img_type_network);
             txt_nom_operateur.setText(carrierName);
             txt_sub_type_network.setText(R.string.non_connecte);
             layout_signal.setVisibility(View.GONE);
+            coordinator_layout_time.setVisibility(View.GONE);
 
             if(!alert_no_conn.isShowing()) {
                 Common.cpt_no_internet +=1;
@@ -676,9 +679,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             coordinator_layout_time.setVisibility(View.VISIBLE);
         }
         else {
-            Common.cpt_no_internet=0;
+            Common.cpt_no_internet = 0;
             alert_no_conn.dismiss();
-            //Toast.makeText(getApplicationContext(), R.string.alert_wifi_title, Toast.LENGTH_LONG).show();
+
             WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(this.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             String ssid = wifiInfo.getSSID();
@@ -687,6 +690,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             txt_nom_operateur.setText(ssid.substring(1,ssid.length()-1));
             txt_sub_type_network.setText(R.string.connecetd_wifi);
             layout_signal.setVisibility(View.GONE);
+            coordinator_layout_time.setVisibility(View.GONE);
+
             if(!alert_wifi.isShowing()){
                 Common.cpt_wifi +=1;
                 if(Common.cpt_wifi < 2){
@@ -716,20 +721,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 switch (networkType) {
                     case TelephonyManager.NETWORK_TYPE_UNKNOWN:
                         Picasso.get().load(R.drawable.ic_network_disable_signal).into(img_type_network);
-                        //findNearestBts();
                         break;
                     case TelephonyManager.NETWORK_TYPE_GPRS:
                         Picasso.get().load(R.drawable.gsm).into(img_type_network);
                         txt_sub_type_network.setVisibility(View.VISIBLE);
-                        txt_sub_type_network.setText(R.string.Sub_type );
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " GPRS");
+                        network = "2G";
                         //displayListeQuality("GPRS");
                         break;
                     case TelephonyManager.NETWORK_TYPE_EDGE:
                         Picasso.get().load(R.drawable.gsm).into(img_type_network);
                         txt_sub_type_network.setVisibility(View.VISIBLE);
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " EDGE");
-                        //displayListeQuality("EDGE");
+                        network = "2G";
                         break;
                     case TelephonyManager.NETWORK_TYPE_CDMA:
                     case TelephonyManager.NETWORK_TYPE_1xRTT:
@@ -737,7 +741,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         Picasso.get().load(R.drawable.gsm).into(img_type_network);
                         txt_sub_type_network.setVisibility(View.VISIBLE);
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " CDMA");
-                        //displayListeQuality("CDMA");
+                        network = "2G";
                         break;
                     case TelephonyManager.NETWORK_TYPE_UMTS:
                     case TelephonyManager.NETWORK_TYPE_EVDO_0:
@@ -746,7 +750,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         Picasso.get().load(R.drawable.umts).into(img_type_network);
                         txt_sub_type_network.setVisibility(View.VISIBLE);
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " UMTS");
-                        //displayListeQuality("UMTS");
+                        network = "3G";
                         break;
                     case TelephonyManager.NETWORK_TYPE_HSPA: //3G+ h
                     case TelephonyManager.NETWORK_TYPE_HSDPA:
@@ -754,7 +758,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         Picasso.get().load(R.drawable.umts).into(img_type_network);
                         txt_sub_type_network.setVisibility(View.VISIBLE);
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " HSPA");
-                        //displayListeQuality("HSPA");
+                        network = "3G";
                         break;
                     case TelephonyManager.NETWORK_TYPE_HSPAP:
                     case TelephonyManager.NETWORK_TYPE_EHRPD:
@@ -762,17 +766,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         Picasso.get().load(R.drawable.umts).into(img_type_network);
                         txt_sub_type_network.setVisibility(View.VISIBLE);
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " HSPA+");
-                        //displayListeQuality("HSPAP");
+                        network = "3G";
                         break;
                     case TelephonyManager.NETWORK_TYPE_LTE:
                         Picasso.get().load(R.drawable.lte).into(img_type_network);
                         txt_sub_type_network.setVisibility(View.VISIBLE);
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " LTE");
-                        //displayListeQuality("LTE");
+                        network = "4G";
                         break;
                     default:
                         Picasso.get().load(R.drawable.rx_5g).into(img_type_network);
-                        //displayListeQuality("5G");
+                        network = "5G";
                         break;
                 }
             }
@@ -928,17 +932,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onDestroy() {
+        compositeDisposable.clear();
         handler.removeCallbacks(runnable);
-        Common.cpt_wifi=0;
-        Common.cpt_no_internet =0;
         telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
-        Common.cpt_wifi=0;
-        Common.cpt_no_internet =0;
         TTS.stop();
         super.onPause();
     }
