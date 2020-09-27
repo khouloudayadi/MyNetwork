@@ -3,6 +3,9 @@ package com.example.mynetwork;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -47,6 +50,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
@@ -61,6 +65,7 @@ import com.example.mynetwork.Model.BaseStation;
 import com.example.mynetwork.Model.uses;
 import com.example.mynetwork.Retrofit.INetworkAPI;
 import com.example.mynetwork.Retrofit.RetrofitClient;
+import com.example.mynetwork.Utile.NotificationHelper;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonObject;
 import com.karumi.dexter.BuildConfig;
@@ -85,6 +90,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.maps.SupportMapFragment;
+import com.mapbox.mapboxsdk.plugins.localization.LocalizationPlugin;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
@@ -187,16 +193,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.img_navigation) ImageView img_navigation;
     @BindView(R.id.coordinator_layout_time) CoordinatorLayout coordinator_layout_time;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
-        map.getStyle(new Style.OnStyleLoaded() {
+       map.getStyle(new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
             }
         });
+       // sendNotification();
     }
-
+    /*
     @OnClick(R.id.img_close)
     void close_interface(){
         cardView_time.setVisibility(View.GONE);
@@ -205,7 +213,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         compositeDisposable.clear();
     }
-
+*/
     @OnClick(R.id.img_drop_down)
     void drop_down_signal(){
         if(!img_signal_tag) {
@@ -293,6 +301,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+
+
     }
 
     private void initView() {
@@ -363,7 +373,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(9);
+        this.map.setMinZoomPreference(10);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -372,9 +382,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                 mapboxMap.addOnMapClickListener(HomeActivity.this);
 
-                initSearchFab();
+                 initSearchFab();
 
                 addPlaceIconSymbolLayer(style);
+
+                LocalizationPlugin localizationPlugin = new LocalizationPlugin(mapView, mapboxMap, style);
+
+                try {
+                    localizationPlugin.matchMapLanguageWithDeviceDefault();
+                } catch (RuntimeException exception) {
+                    Log.d(TAG, exception.toString());
+                }
 
             }
         });
@@ -521,7 +539,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             new CameraPosition.Builder()
                                     .target(new LatLng(((Point) selectedCarmenFeature.geometry()).latitude(),
                                             ((Point) selectedCarmenFeature.geometry()).longitude()))
-                                    .zoom(8)
+                                    .zoom(10)
                                     .build()));
 
                     getRoute(originPoint, destinationPoint);
@@ -899,6 +917,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return baseStation;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void sendNotification(){
+        NotificationHelper notificationHelper = new NotificationHelper(HomeActivity.this);
+        notificationHelper.notify(1, false, "My title", "My content" );
+
+    }
+
+
     public void refresh(int milliseconds){
         handler = new Handler();
         runnable = new Runnable() {
@@ -943,6 +969,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         TTS.stop();
         super.onPause();
     }
+
+
 
 }
 
