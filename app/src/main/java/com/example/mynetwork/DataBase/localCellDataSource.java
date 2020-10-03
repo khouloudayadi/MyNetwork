@@ -13,8 +13,8 @@ public class localCellDataSource implements cellDataSource  {
     }
 
     @Override
-    public Flowable<List<cellItem>> getAllCell() {
-        return cellDAO.getAllCell();
+    public Flowable<List<cellItem>> getAllCell(int cid) {
+        return cellDAO.getAllCell(cid);
     }
 
     @Override

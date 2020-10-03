@@ -13,8 +13,8 @@ import io.reactivex.Flowable;
 @Dao
 public interface CellDAO {
 
-    @Query("SELECT * FROM Cell ")
-    Flowable<List<cellItem>> getAllCell();
+    @Query("SELECT * FROM Cell where cid=:cid ")
+    Flowable<List<cellItem>> getAllCell(int cid);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertorReplaceAll(cellItem... cellItems);

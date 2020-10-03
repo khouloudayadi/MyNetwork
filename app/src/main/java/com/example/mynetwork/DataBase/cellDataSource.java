@@ -6,6 +6,6 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 public interface cellDataSource {
-    Flowable<List<cellItem>> getAllCell();
+    Flowable<List<cellItem>> getAllCell(int cid);
     Completable insertorReplaceAll(cellItem... cellItems);
 }

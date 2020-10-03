@@ -11,7 +11,7 @@ public class cellItem {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "cid")
-    private int cid;
+    private String cid;
     @ColumnInfo(name = "mcc")
     private int mcc;
     @ColumnInfo(name = "mnc")
@@ -27,11 +27,25 @@ public class cellItem {
     @ColumnInfo(name = "range")
     private double range;
 
-    public int getCid() {
+    public cellItem(String cid, int mcc, int mnc, int area, String radio, double lon, double lat, double range) {
+        this.cid = cid;
+        this.mcc = mcc;
+        this.mnc = mnc;
+        this.area = area;
+        this.radio = radio;
+        this.lon = lon;
+        this.lat = lat;
+        this.range = range;
+    }
+
+    public cellItem() {
+    }
+
+    public String getCid() {
         return cid;
     }
 
-    public void setCid(int cid) {
+    public void setCid(String cid) {
         this.cid = cid;
     }
 
@@ -89,5 +103,19 @@ public class cellItem {
 
     public void setRange(double range) {
         this.range = range;
+    }
+
+    @Override
+    public String toString() {
+        return "cellItem{" +
+                "cid=" + cid +
+                ", mcc=" + mcc +
+                ", mnc=" + mnc +
+                ", area=" + area +
+                ", radio='" + radio + '\'' +
+                ", lon=" + lon +
+                ", lat=" + lat +
+                ", range=" + range +
+                '}';
     }
 }

@@ -6,11 +6,11 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(version = 5,entities = cellItem.class,exportSchema = false)
+@Database(version = 1,entities = cellItem.class,exportSchema = false)
 public abstract class cellDataBase extends RoomDatabase {
-    private static cellDataBase  instance;
 
-    public abstract CellDAO cartDAO();
+    private static cellDataBase  instance;
+    public abstract CellDAO cellDAO();
 
     public  static cellDataBase getInstance(Context context){
         if (instance == null)

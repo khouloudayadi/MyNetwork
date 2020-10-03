@@ -61,6 +61,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.developer.kalert.KAlertDialog;
 import com.example.mynetwork.Adapter.usesAdapter;
 import com.example.mynetwork.Common.Common;
+import com.example.mynetwork.DataBase.cellDataBase;
+import com.example.mynetwork.DataBase.cellDataSource;
+import com.example.mynetwork.DataBase.cellItem;
+import com.example.mynetwork.DataBase.localCellDataSource;
 import com.example.mynetwork.Model.BaseStation;
 import com.example.mynetwork.Model.uses;
 import com.example.mynetwork.Retrofit.INetworkAPI;
@@ -99,8 +103,14 @@ import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -113,6 +123,7 @@ import dmax.dialog.SpotsDialog;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import okio.Utf8;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -128,6 +139,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private TelephonyManager telephonyManager;
     private ConnectivityManager connectivityManager;
     private PhoneStateListener ConnectionStateListener;
+
+    //room
+    cellDataSource cellDataSource;
 
     //Tag
     Boolean img_signal_tag = false;
@@ -196,13 +210,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = Build.VERSION_CODES.O)
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
-       map.getStyle(new Style.OnStyleLoaded() {
+      /* map.getStyle(new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
             }
-        });
-       // sendNotification();
+        });*/
+        searchBestBts();
+        readData();
     }
     /*
     @OnClick(R.id.img_close)
@@ -335,6 +350,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         assert locationManager != null;
+
+        cellDataSource = new localCellDataSource(cellDataBase.getInstance(this).cellDAO());
     }
 
     @Override
@@ -921,7 +938,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public void sendNotification(){
         NotificationHelper notificationHelper = new NotificationHelper(HomeActivity.this);
         notificationHelper.notify(1, false, "My title", "My content" );
-
     }
 
 
@@ -970,7 +986,75 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onPause();
     }
 
+    public void  searchBestBts(){
+       compositeDisposable.add(cellDataSource.getAllCell(1234)
+               .subscribeOn(Schedulers.io())
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribe(cellItems -> {
+                   if(cellItems.isEmpty()){
+                       Log.i("cellEmpty","cell Empty");
+                   }
+                   else{
+                       Log.i("cellEmpty",cellItems.get(0).getRadio());
+                   }
 
+                       },throwable -> { Log.i("cell",throwable.getMessage());})
+       );
+   }
+    public void  addBts(){
+       cellItem cellItem = new cellItem();
+       cellItem.setRadio("GSM");
+       cellItem.setCid("1");
+       cellItem.setArea(1);
+       cellItem.setMcc(1);
+       cellItem.setMnc(1);
+       cellItem.setLat(1.1);
+       cellItem.setLon(1.1);
+       cellItem.setRange(1000);
+       compositeDisposable.add(cellDataSource.insertorReplaceAll(cellItem)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe( ()-> {
+                    Toast.makeText(this,"Cell Added ",Toast.LENGTH_SHORT).show();
+                },
+                    throwable -> { Log.i("cell",throwable.getMessage());
+                })
+        );
+    }
+    public void readData(){
+        List<cellItem> cells = new ArrayList<>();
+        cellItem cellItem = new cellItem();
+        InputStream is = getResources().openRawResource(R.raw.dataset);
+        BufferedReader reader= new BufferedReader(
+                new InputStreamReader(is, Charset.forName("UTF-8"))
+        );
+
+        String line="";
+        try {
+            while((line = reader.readLine()) != null){
+                Log.d("line",line);
+                //split by ","
+                String[] tokens = line.split(",");
+                //read row
+                cellItem.setRadio(tokens[0]);
+                cellItem.setCid(tokens[4]);
+                cellItem.setArea(Integer.parseInt(tokens[3]));
+                cellItem.setMcc(Integer.parseInt(tokens[1]));
+                cellItem.setMnc(Integer.parseInt(tokens[2]));
+                cellItem.setLat(Double.parseDouble(tokens[6]));
+                cellItem.setLon(Double.parseDouble(tokens[5]));
+                cellItem.setRange(Double.parseDouble(tokens[7]));
+
+                cells.add(cellItem);
+
+                Log.d("Cell Tower:",cellItem.toString());
+            }
+        } catch (IOException e) {
+            Log.wtf("datset","error reading data file in line"+ line, e);
+            e.printStackTrace();
+        }
+
+    }
 
 }
 
