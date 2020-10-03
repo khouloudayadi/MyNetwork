@@ -216,8 +216,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 enableLocationComponent(style);
             }
         });*/
+        //addBts();
         searchBestBts();
-        readData();
+        //readData();
     }
     /*
     @OnClick(R.id.img_close)
@@ -985,7 +986,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         TTS.stop();
         super.onPause();
     }
-
     public void  searchBestBts(){
        compositeDisposable.add(cellDataSource.getAllCell(1234)
                .subscribeOn(Schedulers.io())
