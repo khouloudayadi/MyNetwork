@@ -49,24 +49,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.developer.kalert.KAlertDialog;
-import com.example.mynetwork.Adapter.usesAdapter;
 import com.example.mynetwork.Common.Common;
 import com.example.mynetwork.DataBase.cellDataBase;
 import com.example.mynetwork.DataBase.cellDataSource;
 import com.example.mynetwork.DataBase.cellItem;
 import com.example.mynetwork.DataBase.localCellDataSource;
 import com.example.mynetwork.Model.BaseStation;
-import com.example.mynetwork.Model.uses;
 import com.example.mynetwork.Retrofit.INetworkAPI;
 import com.example.mynetwork.Retrofit.RetrofitClient;
 import com.example.mynetwork.Utile.NotificationHelper;
@@ -90,10 +81,8 @@ import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.maps.SupportMapFragment;
 import com.mapbox.mapboxsdk.plugins.localization.LocalizationPlugin;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
@@ -109,9 +98,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -120,10 +107,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dmax.dialog.SpotsDialog;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import okio.Utf8;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -140,9 +128,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ConnectivityManager connectivityManager;
     private PhoneStateListener ConnectionStateListener;
 
-    //room
-    cellDataSource cellDataSource;
-
     //Tag
     Boolean img_signal_tag = false;
     Boolean img_speech_tag = false;
@@ -157,6 +142,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     String carrierName;
 
     private List<CellInfo> cellInfoList = null;
+    private List<cellItem> cells = new ArrayList<>();
 
     //refresh
     private Handler handler;
@@ -191,6 +177,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     double start_lat,start_lon,end_lat,end_lon,vitesse;
     String network,datetime;
 
+    //room
+    cellDataSource cellDataSource;
+
     Toolbar toolbar;
     @BindView(R.id.mapView) MapView mapView;
     @BindView(R.id.img_type_network) ImageView img_type_network;
@@ -210,15 +199,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = Build.VERSION_CODES.O)
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
-      /* map.getStyle(new Style.OnStyleLoaded() {
+       map.getStyle(new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
             }
-        });*/
-        //addBts();
-        searchBestBts();
-        //readData();
+        });
     }
     /*
     @OnClick(R.id.img_close)
@@ -353,6 +339,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         assert locationManager != null;
 
         cellDataSource = new localCellDataSource(cellDataBase.getInstance(this).cellDAO());
+
     }
 
     @Override
@@ -941,7 +928,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         notificationHelper.notify(1, false, "My title", "My content" );
     }
 
-
     public void refresh(int milliseconds){
         handler = new Handler();
         runnable = new Runnable() {
@@ -986,74 +972,99 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         TTS.stop();
         super.onPause();
     }
-    public void  searchBestBts(){
-       compositeDisposable.add(cellDataSource.getAllCell(1234)
-               .subscribeOn(Schedulers.io())
-               .observeOn(AndroidSchedulers.mainThread())
-               .subscribe(cellItems -> {
-                   if(cellItems.isEmpty()){
-                       Log.i("cellEmpty","cell Empty");
-                   }
-                   else{
-                       Log.i("cellEmpty",cellItems.get(0).getRadio());
-                   }
 
-                       },throwable -> { Log.i("cell",throwable.getMessage());})
-       );
-   }
-    public void  addBts(){
-       cellItem cellItem = new cellItem();
-       cellItem.setRadio("GSM");
-       cellItem.setCid("1");
-       cellItem.setArea(1);
-       cellItem.setMcc(1);
-       cellItem.setMnc(1);
-       cellItem.setLat(1.1);
-       cellItem.setLon(1.1);
-       cellItem.setRange(1000);
-       compositeDisposable.add(cellDataSource.insertorReplaceAll(cellItem)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe( ()-> {
-                    Toast.makeText(this,"Cell Added ",Toast.LENGTH_SHORT).show();
-                },
-                    throwable -> { Log.i("cell",throwable.getMessage());
-                })
-        );
-    }
-    public void readData(){
-        List<cellItem> cells = new ArrayList<>();
+    public void readData() {
         cellItem cellItem = new cellItem();
         InputStream is = getResources().openRawResource(R.raw.dataset);
-        BufferedReader reader= new BufferedReader(
+        BufferedReader reader = new BufferedReader(
                 new InputStreamReader(is, Charset.forName("UTF-8"))
         );
 
-        String line="";
+        String line = "";
         try {
-            while((line = reader.readLine()) != null){
-                Log.d("line",line);
+            int cpt = 0;
+            while ((line = reader.readLine()) != null) {
                 //split by ","
                 String[] tokens = line.split(",");
                 //read row
                 cellItem.setRadio(tokens[0]);
                 cellItem.setCid(tokens[4]);
-                cellItem.setArea(Integer.parseInt(tokens[3]));
-                cellItem.setMcc(Integer.parseInt(tokens[1]));
-                cellItem.setMnc(Integer.parseInt(tokens[2]));
-                cellItem.setLat(Double.parseDouble(tokens[6]));
-                cellItem.setLon(Double.parseDouble(tokens[5]));
-                cellItem.setRange(Double.parseDouble(tokens[7]));
-
+                cellItem.setArea(tokens[3]);
+                cellItem.setMcc(tokens[1]);
+                cellItem.setMnc(tokens[2]);
+                cellItem.setLat(tokens[6]);
+                cellItem.setLon(tokens[5]);
+                cellItem.setRange(tokens[7]);
                 cells.add(cellItem);
 
-                Log.d("Cell Tower:",cellItem.toString());
             }
+            Log.d("cellTower", String.valueOf(cells.size()));
+
+
         } catch (IOException e) {
-            Log.wtf("datset","error reading data file in line"+ line, e);
+            Log.wtf("dataset", "error reading data file in line" + line, e);
             e.printStackTrace();
         }
 
+    }
+    private void countCellItem() {
+        cellDataSource.countItemCell()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Integer>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        Log.i("countCell", String.valueOf(integer));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("[count cell]",e.getMessage());
+                    }
+                });
+    }
+    public void addBts(){
+        cellItem cellItem = new cellItem();
+        cellItem.setRadio("GSM");
+        cellItem.setCid("4");
+        cellItem.setArea("3");
+        cellItem.setMcc("1");
+        cellItem.setMnc("1");
+        cellItem.setLat("1.1");
+        cellItem.setLon("1.1");
+        cellItem.setRange("1000");
+        compositeDisposable.add(cellDataSource.insertAll(cellItem)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe( ()->
+                        {
+                            Log.d("add",cellItem.toString());
+                        },
+                        throwable ->
+                        {
+                            Log.d("add",throwable.getMessage());
+                        })
+        );
+    }
+
+    public void  searchBestBts(){
+        compositeDisposable.add(cellDataSource.getAllCell()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cellItems -> {
+                    if(cellItems.isEmpty()){
+                        Log.i("searchcell","cell Empty");
+                    }
+                    else{
+                        Log.i("searchcell",cellItems.get(0).toString());
+                    }
+
+                },throwable -> { Log.i("searchcell",throwable.getMessage());})
+        );
     }
 
 }

@@ -9,13 +9,18 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 @Dao
 public interface CellDAO {
 
-    @Query("SELECT * FROM Cell where cid=:cid ")
-    Flowable<List<cellItem>> getAllCell(int cid);
+    @Query("SELECT * FROM Cell")
+    Flowable<List<cellItem>> getAllCell();
+
+    @Query("SELECT COUNT(*) FROM Cell ")
+    Single<Integer> countItemCell();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insertorReplaceAll(cellItem... cellItems);
+    Completable insertAll(cellItem... cellItems);
+
 }

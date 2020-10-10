@@ -4,21 +4,28 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
-public class localCellDataSource implements cellDataSource  {
+public class localCellDataSource implements cellDataSource {
     private CellDAO cellDAO;
 
     public localCellDataSource(CellDAO cellDAO) {
         this.cellDAO = cellDAO;
     }
 
+
     @Override
-    public Flowable<List<cellItem>> getAllCell(int cid) {
-        return cellDAO.getAllCell(cid);
+    public Flowable<List<cellItem>> getAllCell() {
+        return cellDAO.getAllCell();
     }
 
     @Override
-    public Completable insertorReplaceAll(cellItem... cellItems) {
-        return cellDAO.insertorReplaceAll(cellItems);
+    public Single<Integer> countItemCell() {
+        return cellDAO.countItemCell();
+    }
+
+    @Override
+    public Completable insertAll(cellItem... cellItems) {
+        return cellDAO.insertAll(cellItems);
     }
 }
