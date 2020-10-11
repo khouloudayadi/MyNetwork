@@ -1,15 +1,10 @@
 package com.example.mynetwork;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
@@ -22,11 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
-import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityLte;
-import android.telephony.CellIdentityWcdma;
 import android.telephony.CellInfo;
-import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
@@ -57,7 +49,6 @@ import com.example.mynetwork.DataBase.cellDataBase;
 import com.example.mynetwork.DataBase.cellDataSource;
 import com.example.mynetwork.DataBase.cellItem;
 import com.example.mynetwork.DataBase.localCellDataSource;
-import com.example.mynetwork.Model.BaseStation;
 import com.example.mynetwork.Retrofit.INetworkAPI;
 import com.example.mynetwork.Retrofit.RetrofitClient;
 import com.example.mynetwork.Utile.NotificationHelper;
@@ -128,54 +119,44 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private ConnectivityManager connectivityManager;
     private PhoneStateListener ConnectionStateListener;
 
+    //List
+    private List<CellInfo> cellInfoList = null;
+    private List<cellItem> cells = new ArrayList<>();
     //Tag
     Boolean img_signal_tag = false;
     Boolean img_speech_tag = false;
-
     // Alert
     android.app.AlertDialog dialog;
     KAlertDialog alert_no_conn;
     KAlertDialog alert_wifi;
     AlertDialog alert_gps;
-
-
-    String carrierName;
-
-    private List<CellInfo> cellInfoList = null;
-    private List<cellItem> cells = new ArrayList<>();
-
-    //refresh
-    private Handler handler;
-    private Runnable runnable;
-    TextView txt_name_operateur;
-
     //mapBox
     MapboxMap map;
     PermissionsManager permissionsManager;
     LocationComponent locationComponent;
-    LocationManager locationManager;
-    //search place
+    LocationManager locationManager;    //search place
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private String geojsonPlaceLayerId = "geojsonPlaceLayerId";
-
     //get route
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
-
+    //refresh
+    private Handler handler;
+    private Runnable runnable;
+    TextView txt_name_operateur;
     //Text to speech
     TextToSpeech TTS;
     String txt_distance,txt_temps;
-
     //enable GPS
     boolean GpsStatus;
-
     //var api rest
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     INetworkAPI myNetworkAPI;
-
+    //Variable
+    private int rssi;
     double start_lat,start_lon,end_lat,end_lon,vitesse;
-    String network,datetime;
+    String network,datetime,carrierName;
 
     //room
     cellDataSource cellDataSource;
@@ -751,7 +732,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         txt_sub_type_network.setVisibility(View.VISIBLE);
                         txt_sub_type_network.setText(getResources().getString(R.string.Sub_type)+ " GPRS");
                         network = "2G";
-                        //displayListeQuality("GPRS");
                         break;
                     case TelephonyManager.NETWORK_TYPE_EDGE:
                         Picasso.get().load(R.drawable.gsm).into(img_type_network);
@@ -816,95 +796,80 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
             cellInfoList = telephonyManager.getAllCellInfo();
         if (cellInfoList == null) {
-            Log.d("bs","The base station list is null");
+            Log.d("getSignal","The base station list is null");
         }
         else if (cellInfoList.size() == 0) {
-            Log.d("bs","The base station list is empty");
+            Log.d("getSignal","The base station list is empty");
         }
         else{
-            BaseStation main_BS = bindData(cellInfoList.get(0));
-            Log.i("cell",main_BS.toString());
-            if(main_BS.getType() == "WCDMA" || main_BS.getType() == "GSM" ){
-                if(main_BS.getRssi() >= -70){
-                    layout_signal.setBackgroundResource(R.color.signal_excellent);
-                    txt_signal.setText(R.string.signal_strength_excellent);
-                    txt_descr_signal.setText(R.string.desc_signal_excellent);
-                }
-                else if((main_BS.getRssi() >= -85) && (main_BS.getRssi() < -70)){
-                    layout_signal.setBackgroundResource(R.color.signal_good);
-                    txt_signal.setText(R.string.signal_strength_good);
-                    txt_descr_signal.setText(R.string.desc_signal_good);
-                }
-                else if((main_BS.getRssi() >= -100) && (main_BS.getRssi() <= -86)){
-                    layout_signal.setBackgroundResource(R.color.signal_fair);
-                    txt_signal.setText(R.string.signal_strength_fair);
-                    txt_descr_signal.setText(R.string.desc_signal_fair);
-                }
-                else if(main_BS.getRssi() < -100){
-                    layout_signal.setBackgroundResource(R.color.signal_Poor);
-                    txt_signal.setText(R.string.signal_strength_poor);
-                    txt_descr_signal.setText(R.string.desc_signal_poor);
-                }
-                else if(main_BS.getRssi() == -110){
-                    layout_signal.setBackgroundResource(R.color.no_signal);
-                    txt_signal.setText(R.string.no_signal);
-                    txt_descr_signal.setText(R.string.no_signal);
-                }
-            }
-            else if(main_BS.getType() == "LTE"){
-
-                if(main_BS.getRssi() > -65){
-                    layout_signal.setBackgroundResource(R.color.signal_excellent);
-                    txt_signal.setText(R.string.signal_strength_excellent);
-                    txt_descr_signal.setText(R.string.desc_signal_excellent);
-                }
-                else if((main_BS.getRssi() > -75) && (main_BS.getRssi() <= -65)){
-                    layout_signal.setBackgroundResource(R.color.signal_good);
-                    txt_signal.setText(R.string.signal_strength_good);
-                    txt_descr_signal.setText(R.string.desc_signal_good);
-                }
-                else if((main_BS.getRssi() > -85) && (main_BS.getRssi() <= -75)){
-                    layout_signal.setBackgroundResource(R.color.signal_fair);
-                    txt_signal.setText(R.string.signal_strength_fair);
-                    txt_descr_signal.setText(R.string.desc_signal_fair);
-                }
-                else if((main_BS.getRssi() <= -85)&&(main_BS.getRssi() > -95) ){
-                    layout_signal.setBackgroundResource(R.color.signal_Poor);
-                    txt_signal.setText(R.string.signal_strength_poor);
-                    txt_descr_signal.setText(R.string.desc_signal_poor);
-                }
-                else if(main_BS.getRssi() <= -95){
-                    layout_signal.setBackgroundResource(R.color.no_signal);
-                    txt_signal.setText(R.string.no_signal);
-                    txt_descr_signal.setText(R.string.no_signal);
-                }
-            }
+            getRssi(cellInfoList.get(0));
         }
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private BaseStation bindData(CellInfo cellInfo) {
-        BaseStation baseStation = new BaseStation();
-
-        // La station de base a différents types de signaux: 2G, 3G, 4G
+    public void getRssi(CellInfo cellInfo){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             if (cellInfo instanceof CellInfoWcdma) {
                 //3G
                 CellInfoWcdma cellInfoWcdma = (CellInfoWcdma) cellInfo;
-                baseStation = new BaseStation();
                 if (cellInfoWcdma.getCellSignalStrength() != null) {
-                    baseStation.setType("WCDMA");
-                    baseStation.setRssi(cellInfoWcdma.getCellSignalStrength().getDbm()); //Get the signal strength as dBm
+                    rssi=cellInfoWcdma.getCellSignalStrength().getDbm();//Get the signal strength as dBm
+                    if(rssi >= -70){
+                        layout_signal.setBackgroundResource(R.color.signal_excellent);
+                        txt_signal.setText(R.string.signal_strength_excellent);
+                        txt_descr_signal.setText(R.string.desc_signal_excellent);
+                    }
+                    else if((rssi >= -85) && (rssi < -70)){
+                        layout_signal.setBackgroundResource(R.color.signal_good);
+                        txt_signal.setText(R.string.signal_strength_good);
+                        txt_descr_signal.setText(R.string.desc_signal_good);
+                    }
+                    else if((rssi >= -100) && (rssi <= -86)){
+                        layout_signal.setBackgroundResource(R.color.signal_fair);
+                        txt_signal.setText(R.string.signal_strength_fair);
+                        txt_descr_signal.setText(R.string.desc_signal_fair);
+                    }
+                    else if(rssi < -100){
+                        layout_signal.setBackgroundResource(R.color.signal_Poor);
+                        txt_signal.setText(R.string.signal_strength_poor);
+                        txt_descr_signal.setText(R.string.desc_signal_poor);
+                    }
+                    else if(rssi == -110){
+                        layout_signal.setBackgroundResource(R.color.no_signal);
+                        txt_signal.setText(R.string.no_signal);
+                        txt_descr_signal.setText(R.string.no_signal);
+                    }
                 }
             }
             else if (cellInfo instanceof CellInfoLte) {
                 //4G
                 CellInfoLte cellInfoLte = (CellInfoLte) cellInfo;
-                CellIdentityLte cellIdentityLte = cellInfoLte.getCellIdentity();
                 if (cellInfoLte.getCellSignalStrength() != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        baseStation.setType("LTE");
-                        baseStation.setRssi(cellInfoLte.getCellSignalStrength().getRssi());
+                        rssi=cellInfoLte.getCellSignalStrength().getRssi();
+                        if(rssi > -65){
+                            layout_signal.setBackgroundResource(R.color.signal_excellent);
+                            txt_signal.setText(R.string.signal_strength_excellent);
+                            txt_descr_signal.setText(R.string.desc_signal_excellent);
+                        }
+                        else if((rssi > -75) && (rssi <= -65)){
+                            layout_signal.setBackgroundResource(R.color.signal_good);
+                            txt_signal.setText(R.string.signal_strength_good);
+                            txt_descr_signal.setText(R.string.desc_signal_good);
+                        }
+                        else if((rssi > -85) && (rssi <= -75)){
+                            layout_signal.setBackgroundResource(R.color.signal_fair);
+                            txt_signal.setText(R.string.signal_strength_fair);
+                            txt_descr_signal.setText(R.string.desc_signal_fair);
+                        }
+                        else if((rssi <= -85)&&(rssi > -95) ){
+                            layout_signal.setBackgroundResource(R.color.signal_Poor);
+                            txt_signal.setText(R.string.signal_strength_poor);
+                            txt_descr_signal.setText(R.string.desc_signal_poor);
+                        }
+                        else if(rssi <= -95){
+                            layout_signal.setBackgroundResource(R.color.no_signal);
+                            txt_signal.setText(R.string.no_signal);
+                            txt_descr_signal.setText(R.string.no_signal);
+                        }
                     }
                 }
             }
@@ -912,15 +877,38 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 //2G
                 CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
                 if (cellInfoGsm.getCellSignalStrength() != null) {
-                    baseStation.setType("GSM");
-                    baseStation.setRssi(cellInfoGsm.getCellSignalStrength().getDbm());
+                     rssi=cellInfoGsm.getCellSignalStrength().getDbm();
+                    if(rssi >= -70){
+                        layout_signal.setBackgroundResource(R.color.signal_excellent);
+                        txt_signal.setText(R.string.signal_strength_excellent);
+                        txt_descr_signal.setText(R.string.desc_signal_excellent);
+                    }
+                    else if((rssi >= -85) && (rssi < -70)){
+                        layout_signal.setBackgroundResource(R.color.signal_good);
+                        txt_signal.setText(R.string.signal_strength_good);
+                        txt_descr_signal.setText(R.string.desc_signal_good);
+                    }
+                    else if((rssi >= -100) && (rssi <= -86)){
+                        layout_signal.setBackgroundResource(R.color.signal_fair);
+                        txt_signal.setText(R.string.signal_strength_fair);
+                        txt_descr_signal.setText(R.string.desc_signal_fair);
+                    }
+                    else if(rssi < -100){
+                        layout_signal.setBackgroundResource(R.color.signal_Poor);
+                        txt_signal.setText(R.string.signal_strength_poor);
+                        txt_descr_signal.setText(R.string.desc_signal_poor);
+                    }
+                    else if(rssi == -110){
+                        layout_signal.setBackgroundResource(R.color.no_signal);
+                        txt_signal.setText(R.string.no_signal);
+                        txt_descr_signal.setText(R.string.no_signal);
+                    }
                 }
             }
             else {
-                Log.e("TAG", "CDMA CellInfo................................................");
+                Log.e("TAG", "CDMA CellInfo");
             }
         }
-        return baseStation;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
