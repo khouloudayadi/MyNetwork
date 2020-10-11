@@ -25,7 +25,9 @@ public class localCellDataSource implements cellDataSource {
     }
 
     @Override
-    public Completable insertAll(cellItem... cellItems) {
+    public Completable insertAll(List<cellItem> cellItems) {
         return cellDAO.insertAll(cellItems);
     }
+
+
 }

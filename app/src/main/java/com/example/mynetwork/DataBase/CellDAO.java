@@ -20,7 +20,7 @@ public interface CellDAO {
     @Query("SELECT COUNT(*) FROM Cell ")
     Single<Integer> countItemCell();
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insertAll(cellItem... cellItems);
+    @Insert()
+    Completable insertAll(List<cellItem>  cellItem);
 
 }

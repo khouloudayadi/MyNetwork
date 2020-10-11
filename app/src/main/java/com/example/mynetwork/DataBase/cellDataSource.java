@@ -10,5 +10,5 @@ public interface cellDataSource {
 
     Flowable<List<cellItem>> getAllCell();
     Single<Integer> countItemCell();
-    Completable insertAll(cellItem... cellItems);
+    Completable insertAll(List<cellItem> cellItems);
 }

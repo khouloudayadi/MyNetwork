@@ -199,12 +199,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = Build.VERSION_CODES.O)
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
-       map.getStyle(new Style.OnStyleLoaded() {
+        map.getStyle(new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
             }
         });
+
     }
     /*
     @OnClick(R.id.img_close)
@@ -966,12 +967,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
         super.onDestroy();
     }
-
     @Override
     protected void onPause() {
         TTS.stop();
         super.onPause();
     }
+
 
     public void readData() {
         cellItem cellItem = new cellItem();
@@ -982,7 +983,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         String line = "";
         try {
-            int cpt = 0;
             while ((line = reader.readLine()) != null) {
                 //split by ","
                 String[] tokens = line.split(",");
@@ -998,7 +998,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 cells.add(cellItem);
 
             }
-            Log.d("cellTower", String.valueOf(cells.size()));
+            Log.d("dataset", String.valueOf(cells.size()));
 
 
         } catch (IOException e) {
@@ -1023,34 +1023,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.i("[count cell]",e.getMessage());
+                        Log.i("countCell",e.getMessage());
                     }
                 });
     }
-    public void addBts(){
-        cellItem cellItem = new cellItem();
-        cellItem.setRadio("GSM");
-        cellItem.setCid("4");
-        cellItem.setArea("3");
-        cellItem.setMcc("1");
-        cellItem.setMnc("1");
-        cellItem.setLat("1.1");
-        cellItem.setLon("1.1");
-        cellItem.setRange("1000");
-        compositeDisposable.add(cellDataSource.insertAll(cellItem)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe( ()->
-                        {
-                            Log.d("add",cellItem.toString());
-                        },
-                        throwable ->
-                        {
-                            Log.d("add",throwable.getMessage());
-                        })
-        );
-    }
-
     public void  searchBestBts(){
         compositeDisposable.add(cellDataSource.getAllCell()
                 .subscribeOn(Schedulers.io())
@@ -1061,11 +1037,59 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     }
                     else{
                         Log.i("searchcell",cellItems.get(0).toString());
+                        Log.i("searchcell",cellItems.get(1).toString());
+                        Log.i("searchcell",cellItems.get(2).toString());
                     }
 
                 },throwable -> { Log.i("searchcell",throwable.getMessage());})
         );
     }
+    public void addCell(){
+        cellItem cellItem = new cellItem();
+        cellItem.setRadio("GSM");
+        cellItem.setCid("2");
+        cellItem.setArea("3");
+        cellItem.setMcc("1");
+        cellItem.setMnc("1");
+        cellItem.setLat("1.1");
+        cellItem.setLon("1.1");
+        cellItem.setRange("1000");
+        cellItem cellItem1 = new cellItem();
+        cellItem1.setRadio("GSM");
+        cellItem1.setCid("1");
+        cellItem1.setArea("3");
+        cellItem1.setMcc("1");
+        cellItem1.setMnc("1");
+        cellItem1.setLat("1.1");
+        cellItem1.setLon("1.1");
+        cellItem1.setRange("1000");
+        cellItem cellItem2 = new cellItem();
+        cellItem2.setRadio("GSM");
+        cellItem2.setCid("3");
+        cellItem2.setArea("3");
+        cellItem2.setMcc("1");
+        cellItem2.setMnc("1");
+        cellItem2.setLat("1.1");
+        cellItem2.setLon("1.1");
+        cellItem2.setRange("1000");
 
+        cells.add(cellItem);
+        cells.add(cellItem1);
+        cells.add(cellItem2);
+
+        compositeDisposable.add(cellDataSource.insertAll(cells)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe( ()->
+                        {
+                            Log.d("add", String.valueOf(cells.size()));
+                        },
+                        throwable ->
+                        {
+                            Log.d("add",throwable.getMessage());
+                        })
+        );
+
+    }
 }
 
