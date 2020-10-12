@@ -111,6 +111,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.os.Build.VERSION_CODES.O;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
@@ -126,18 +127,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private List<CellInfo> cellInfoList = null;
     private List<cellItem> cells = new ArrayList<>();
     //Tag
-    Boolean img_signal_tag = false;
-    Boolean img_speech_tag = false;
+    private Boolean img_signal_tag = false;
+    private Boolean img_speech_tag = false;
     // Alert
-    android.app.AlertDialog dialog;
-    KAlertDialog alert_no_conn;
-    KAlertDialog alert_wifi;
-    AlertDialog alert_gps;
+    private android.app.AlertDialog dialog;
+    private KAlertDialog alert_no_conn;
+    private KAlertDialog alert_wifi;
+    private AlertDialog alert_gps;
     //mapBox
-    MapboxMap map;
-    PermissionsManager permissionsManager;
-    LocationComponent locationComponent;
-    LocationManager locationManager;    //search place
+    private  MapboxMap map;
+    private PermissionsManager permissionsManager;
+    private LocationComponent locationComponent;
+    private LocationManager locationManager;    //search place
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
     private String geojsonPlaceLayerId = "geojsonPlaceLayerId";
     //get route
@@ -147,22 +148,22 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     //refresh
     private Handler handler;
     private Runnable runnable;
-    TextView txt_name_operateur;
+    private TextView txt_name_operateur;
     //Text to speech
-    TextToSpeech TTS;
-    String txt_distance,txt_temps;
+    private TextToSpeech TTS;
+    private String txt_distance,txt_temps;
     //enable GPS
     boolean GpsStatus;
     //var api rest
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
-    INetworkAPI myNetworkAPI;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private INetworkAPI myNetworkAPI;
     //Variable
     private int rssi;
     double start_lat,start_lon,end_lat,end_lon,vitesse;
-    String network,datetime,carrierName;
+    private String network,datetime,carrierName;
 
     //room
-    cellDataSource cellDataSource;
+    private cellDataSource cellDataSource;
 
     Toolbar toolbar;
     @BindView(R.id.mapView) MapView mapView;
@@ -180,7 +181,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.img_navigation) ImageView img_navigation;
     @BindView(R.id.coordinator_layout_time) CoordinatorLayout coordinator_layout_time;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = O)
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
        /* map.getStyle(new Style.OnStyleLoaded() {
@@ -189,7 +190,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 enableLocationComponent(style);
             }
         });*/
-       getAllCell();
+         //getAllCell();
+        //countCellItem();
+        searchBestBts();
 
     }
     /*
@@ -915,7 +918,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = O)
     public void sendNotification(){
         NotificationHelper notificationHelper = new NotificationHelper(HomeActivity.this);
         notificationHelper.notify(1, false, "My title", "My content" );
@@ -1046,28 +1049,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         cellItem.setLat("1.1");
         cellItem.setLon("1.1");
         cellItem.setRange("1000");
-        cellItem cellItem1 = new cellItem();
-        cellItem1.setRadio("GSM");
-        cellItem1.setCid("1");
-        cellItem1.setArea("3");
-        cellItem1.setMcc("1");
-        cellItem1.setMnc("1");
-        cellItem1.setLat("1.1");
-        cellItem1.setLon("1.1");
-        cellItem1.setRange("1000");
-        cellItem cellItem2 = new cellItem();
-        cellItem2.setRadio("GSM");
-        cellItem2.setCid("3");
-        cellItem2.setArea("3");
-        cellItem2.setMcc("1");
-        cellItem2.setMnc("1");
-        cellItem2.setLat("1.1");
-        cellItem2.setLon("1.1");
-        cellItem2.setRange("1000");
-
         cells.add(cellItem);
-        cells.add(cellItem1);
-        cells.add(cellItem2);
 
         compositeDisposable.add(cellDataSource.insertAll(cells)
                 .subscribeOn(Schedulers.io())
@@ -1084,24 +1066,55 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-
-
     public void getAllCell(){
-        Call<List<Cell>> cell = myNetworkAPI.getCell();
-        cell.enqueue(new Callback<List<Cell>>() {
-            @Override
-            public void onResponse(Call<List<Cell>> call, Response<List<Cell>> response) {
-                List<Cell> cells = response.body();
-                Log.d("ok", String.valueOf(cells.get(0).getCid()));
-                Log.d("ok", String.valueOf(cells.get(18769).getCid()));
-                Log.d("ok", String.valueOf(cells.size()));
-            }
+        dialog.show();
+        compositeDisposable.add(myNetworkAPI.getCell()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cellModel -> {
+                            if(cellModel.isSuccess()){
+                                for (Cell cell : cellModel.getResult()) {
+                                    cellItem cellItem = new cellItem();
+                                    cellItem.setRadio(cell.getRadio());
+                                    cellItem.setCid(String.valueOf(cell.getCid()));
+                                    cellItem.setArea(String.valueOf(cell.getArea()));
+                                    cellItem.setMcc(String.valueOf(cell.getMcc()));
+                                    cellItem.setMnc(String.valueOf(cell.getMnc()));
+                                    cellItem.setLat(String.valueOf(cell.getLat()));
+                                    cellItem.setLon(String.valueOf(cell.getLon()));
+                                    cellItem.setRange(String.valueOf(cell.getRange()));
+                                    cells.add(cellItem);
+                                }
+                                Log.d("getCellDB", String.valueOf(cells.size()));
+                                Log.d("getCellDB", cells.get(1).getCid());
 
-            @Override
-            public void onFailure(Call<List<Cell>> call, Throwable t) {
-                Log.d("Msg", t.getMessage());
-            }
-        });
+                                compositeDisposable.add(cellDataSource.insertAll(cells)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe( ()->
+                                                {
+                                                    Log.d("addCell", String.valueOf(cells.size()));
+                                                },
+                                                throwable ->
+                                                {
+                                                    Log.d("addedCell",throwable.getMessage());
+                                                })
+                                );
+
+                            }
+                            else{
+                                Log.d("getCellDB", cellModel.getMessage());
+                            }
+                            dialog.dismiss();
+                        },
+                        throwable -> {
+                            dialog.dismiss();
+                            Log.d("getCellDB", throwable.getMessage());
+                         }
+                )
+        );
     }
+
+
 }
 

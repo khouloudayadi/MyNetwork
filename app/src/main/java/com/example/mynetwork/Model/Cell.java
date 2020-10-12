@@ -83,4 +83,18 @@ public class Cell {
     public void setLat(double lat) {
         this.lat = lat;
     }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "radio='" + radio + '\'' +
+                ", mcc=" + mcc +
+                ", mnc=" + mnc +
+                ", area=" + area +
+                ", cid=" + cid +
+                ", range=" + range +
+                ", lat=" + lat +
+                ", lon=" + lon +
+                '}';
+    }
 }

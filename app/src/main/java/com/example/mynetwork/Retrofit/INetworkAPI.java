@@ -22,7 +22,7 @@ public interface INetworkAPI {
     Observable<predict> getPredictTime(@Body JsonObject precictTime);
 
     @GET("getCell")
-    Call<List<Cell>> getCell();
-
+    Observable<CellModel> getCell();
+    //Call<List<Cell>> getCell();
 
 }
