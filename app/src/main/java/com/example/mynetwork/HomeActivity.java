@@ -49,6 +49,8 @@ import com.example.mynetwork.DataBase.cellDataBase;
 import com.example.mynetwork.DataBase.cellDataSource;
 import com.example.mynetwork.DataBase.cellItem;
 import com.example.mynetwork.DataBase.localCellDataSource;
+import com.example.mynetwork.Model.Cell;
+import com.example.mynetwork.Model.CellModel;
 import com.example.mynetwork.Retrofit.INetworkAPI;
 import com.example.mynetwork.Retrofit.RetrofitClient;
 import com.example.mynetwork.Utile.NotificationHelper;
@@ -98,6 +100,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dmax.dialog.SpotsDialog;
+import io.reactivex.Scheduler;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -180,12 +183,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = Build.VERSION_CODES.O)
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
-        map.getStyle(new Style.OnStyleLoaded() {
+       /* map.getStyle(new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
             }
-        });
+        });*/
+       getAllCell();
 
     }
     /*
@@ -1078,6 +1082,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         })
         );
 
+    }
+
+
+
+    public void getAllCell(){
+        Call<List<Cell>> cell = myNetworkAPI.getCell();
+        cell.enqueue(new Callback<List<Cell>>() {
+            @Override
+            public void onResponse(Call<List<Cell>> call, Response<List<Cell>> response) {
+                List<Cell> cells = response.body();
+                Log.d("ok", String.valueOf(cells.get(0).getCid()));
+                Log.d("ok", String.valueOf(cells.get(18769).getCid()));
+                Log.d("ok", String.valueOf(cells.size()));
+            }
+
+            @Override
+            public void onFailure(Call<List<Cell>> call, Throwable t) {
+                Log.d("Msg", t.getMessage());
+            }
+        });
     }
 }
 
