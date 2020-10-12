@@ -10,8 +10,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.mynetwork.Common.Common;
+import com.example.mynetwork.DataBase.cellDataBase;
+import com.example.mynetwork.DataBase.cellDataSource;
+import com.example.mynetwork.DataBase.cellItem;
+import com.example.mynetwork.DataBase.localCellDataSource;
+import com.example.mynetwork.Model.Cell;
+import com.example.mynetwork.Retrofit.INetworkAPI;
+import com.example.mynetwork.Retrofit.RetrofitClient;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -19,50 +30,97 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import dmax.dialog.SpotsDialog;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class SplashScreen extends AppCompatActivity {
+
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    INetworkAPI myNetworkAPI;
+    cellDataSource cellDataSource;
+    List<cellItem> cells = new ArrayList<>();
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        init();
 
         Dexter.withActivity(SplashScreen.this)
                 .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 .withListener(new PermissionListener() {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run(){
-                                startActivity(new Intent(SplashScreen.this, HomeActivity.class));
-                                finish();
-                            }
-                        },900);
+                        progressBar.setVisibility(View.VISIBLE);
+                        compositeDisposable.add(myNetworkAPI.getCell()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(cellModel -> {
+                                            if(cellModel.isSuccess()){
+                                                for (Cell cell : cellModel.getResult()) {
+                                                    cellItem cellItem = new cellItem();
+                                                    cellItem.setRadio(cell.getRadio());
+                                                    cellItem.setCid(String.valueOf(cell.getCid()));
+                                                    cellItem.setArea(String.valueOf(cell.getArea()));
+                                                    cellItem.setMcc(String.valueOf(cell.getMcc()));
+                                                    cellItem.setMnc(String.valueOf(cell.getMnc()));
+                                                    cellItem.setLat(String.valueOf(cell.getLat()));
+                                                    cellItem.setLon(String.valueOf(cell.getLon()));
+                                                    cellItem.setRange(String.valueOf(cell.getRange()));
+                                                    cells.add(cellItem);
+                                                }
+                                                compositeDisposable.add(cellDataSource.insertAll(cells)
+                                                        .subscribeOn(Schedulers.io())
+                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                        .subscribe(()->
+                                                                {
+                                                                    Log.d("addCell", String.valueOf(cells.size()));
+                                                                    Intent home = new Intent(SplashScreen.this,HomeActivity.class);
+                                                                    startActivity(home);
+                                                                    finish();
+                                                                },
+                                                                throwable ->
+                                                                {
+                                                                    Log.d("addedCell",throwable.getMessage());
+                                                                })
+                                                );
+                                            }
+                                            else{
+                                                Log.d("getCellDB", cellModel.getMessage());
+                                            }
+                                        },
+                                        throwable -> {
+                                            Log.d("getCellDB", throwable.getMessage());
+                                            Toast.makeText(SplashScreen.this,R.string.check_connection,Toast.LENGTH_LONG).show();
+                                        }
+                                )
+                        );
+
                     }
                     @Override
                     public void onPermissionDenied(PermissionDeniedResponse response) {
                         if(response.isPermanentlyDenied()){
+                            Toast.makeText(SplashScreen.this, R.string.Permission_Denied, Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
                             AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
                             builder.setTitle(R.string.Permission_Denied)
                                     .setMessage(R.string.permission_title)
-                                    .setNegativeButton(R.string.cancel_alert, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            finish();
-                                        }
-                                    })
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                           /* Intent intent = new Intent();
-                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            intent.setData(Uri.fromParts("package", getPackageName(), null));*/
-                                           finish();
+                                            finish();
                                         }
                                     })
                                     .show();
-                        } else {
-                            Toast.makeText(SplashScreen.this, R.string.Permission_Denied, Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -73,12 +131,10 @@ public class SplashScreen extends AppCompatActivity {
                 })
                 .check();
 
-        /*
-        new Handler().postDelayed(new Runnable(){
-            @Override
-            public void run(){
-            }
-        },1500);
-         */
+    }
+
+    private void init() {
+        cellDataSource = new localCellDataSource(cellDataBase.getInstance(this).cellDAO());
+        myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
     }
 }

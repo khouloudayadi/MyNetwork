@@ -184,16 +184,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = O)
     @OnClick(R.id.fab_my_location)
     void getMyLocation(){
-       /* map.getStyle(new Style.OnStyleLoaded() {
+        map.getStyle(new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
             }
-        });*/
-         //getAllCell();
-        //countCellItem();
-        searchBestBts();
-
+        });
     }
     /*
     @OnClick(R.id.img_close)
@@ -968,40 +964,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onPause();
     }
 
-
-    public void readData() {
-        cellItem cellItem = new cellItem();
-        InputStream is = getResources().openRawResource(R.raw.dataset);
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(is, Charset.forName("UTF-8"))
-        );
-
-        String line = "";
-        try {
-            while ((line = reader.readLine()) != null) {
-                //split by ","
-                String[] tokens = line.split(",");
-                //read row
-                cellItem.setRadio(tokens[0]);
-                cellItem.setCid(tokens[4]);
-                cellItem.setArea(tokens[3]);
-                cellItem.setMcc(tokens[1]);
-                cellItem.setMnc(tokens[2]);
-                cellItem.setLat(tokens[6]);
-                cellItem.setLon(tokens[5]);
-                cellItem.setRange(tokens[7]);
-                cells.add(cellItem);
-
-            }
-            Log.d("dataset", String.valueOf(cells.size()));
-
-
-        } catch (IOException e) {
-            Log.wtf("dataset", "error reading data file in line" + line, e);
-            e.printStackTrace();
-        }
-
-    }
     private void countCellItem() {
         cellDataSource.countItemCell()
                 .subscribeOn(Schedulers.io())
@@ -1021,23 +983,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         Log.i("countCell",e.getMessage());
                     }
                 });
-    }
-    public void  searchBestBts(){
-        compositeDisposable.add(cellDataSource.getAllCell()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cellItems -> {
-                    if(cellItems.isEmpty()){
-                        Log.i("searchcell","cell Empty");
-                    }
-                    else{
-                        Log.i("searchcell",cellItems.get(0).toString());
-                        Log.i("searchcell",cellItems.get(1).toString());
-                        Log.i("searchcell",cellItems.get(2).toString());
-                    }
-
-                },throwable -> { Log.i("searchcell",throwable.getMessage());})
-        );
     }
     public void addCell(){
         cellItem cellItem = new cellItem();
@@ -1066,52 +1011,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void getAllCell(){
-        dialog.show();
-        compositeDisposable.add(myNetworkAPI.getCell()
+    public void  searchBestBts(){
+        compositeDisposable.add(cellDataSource.getAllCell()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cellModel -> {
-                            if(cellModel.isSuccess()){
-                                for (Cell cell : cellModel.getResult()) {
-                                    cellItem cellItem = new cellItem();
-                                    cellItem.setRadio(cell.getRadio());
-                                    cellItem.setCid(String.valueOf(cell.getCid()));
-                                    cellItem.setArea(String.valueOf(cell.getArea()));
-                                    cellItem.setMcc(String.valueOf(cell.getMcc()));
-                                    cellItem.setMnc(String.valueOf(cell.getMnc()));
-                                    cellItem.setLat(String.valueOf(cell.getLat()));
-                                    cellItem.setLon(String.valueOf(cell.getLon()));
-                                    cellItem.setRange(String.valueOf(cell.getRange()));
-                                    cells.add(cellItem);
-                                }
-                                Log.d("getCellDB", String.valueOf(cells.size()));
-                                Log.d("getCellDB", cells.get(1).getCid());
+                .subscribe(cellItems -> {
+                    if(cellItems.isEmpty()){
+                        Log.i("searchcell","cell Empty");
+                    }
+                    else{
+                        Log.i("searchcell",cellItems.get(0).toString());
+                        Log.i("searchcell",cellItems.get(1).toString());
+                        Log.i("searchcell",cellItems.get(2).toString());
+                    }
 
-                                compositeDisposable.add(cellDataSource.insertAll(cells)
-                                        .subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe( ()->
-                                                {
-                                                    Log.d("addCell", String.valueOf(cells.size()));
-                                                },
-                                                throwable ->
-                                                {
-                                                    Log.d("addedCell",throwable.getMessage());
-                                                })
-                                );
-
-                            }
-                            else{
-                                Log.d("getCellDB", cellModel.getMessage());
-                            }
-                            dialog.dismiss();
-                        },
-                        throwable -> {
-                            dialog.dismiss();
-                            Log.d("getCellDB", throwable.getMessage());
-                         }
-                )
+                },throwable -> { Log.i("searchcell",throwable.getMessage());})
         );
     }
 
