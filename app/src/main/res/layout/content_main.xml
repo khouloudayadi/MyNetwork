@@ -46,7 +46,6 @@
                 android:id="@+id/txt_sub_type_network"
                 android:textColor="@android:color/black"
                 android:layout_height="wrap_content" />
-
         </LinearLayout>
     </LinearLayout>
     <View
@@ -55,10 +54,47 @@
         android:layout_height="1dp"/>
     <LinearLayout
         android:layout_width="match_parent"
+        android:padding="3dp"
+        android:background="@android:color/background_dark"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_absence_connx"
+        android:visibility="gone"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@string/distance_to_cell"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:fontFamily="serif"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="435"
+            android:id="@+id/txt_distance_to_cell"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:fontFamily="serif"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="m"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:layout_marginTop="5dp"
+            android:fontFamily="serif"
+            android:layout_marginBottom="5dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:background="@color/signal_excellent"
         android:layout_height="wrap_content"
         android:id="@+id/layout_signal"
-        android:visibility="visible"
+        android:visibility="gone"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
@@ -89,7 +125,7 @@
             android:id="@+id/txt_descr_signal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:visibility="gone"
             android:layout_height="wrap_content" />
 
@@ -114,9 +150,21 @@
             android:layout_gravity="bottom"
             android:background="@android:color/transparent">
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_info_cell"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="end"
+                android:tint="@color/colorPrimary"
+                app:fabSize="mini"
+                app:backgroundTint="@android:color/white"
+                android:src="@drawable/ic_info_outline_24" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_location_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="visible"
                 android:layout_marginRight="10dp"
                 android:layout_gravity="end"
                 android:tint="@color/colorPrimary"
@@ -128,6 +176,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
+                android:visibility="visible"
                 android:layout_marginTop="8dp"
                 android:layout_gravity="end"
                 android:layout_marginBottom="10dp"
@@ -214,10 +263,7 @@
 
                     </LinearLayout>
                 </LinearLayout>
-
-
             </androidx.cardview.widget.CardView>
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 </LinearLayout>

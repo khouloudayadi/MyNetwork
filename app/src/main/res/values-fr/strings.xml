@@ -59,4 +59,10 @@
     <string name="ping">Temps de réponse</string>
     <string name="dowload">Descendant</string>
     <string name="upload">Montant</string>
+    <string name="distance_to_cell">Distance de L\'antenne :</string>
+    <string name="network_type">Type de réseau : </string>
+    <string name="mobile_country_code">Code de pays mobile (MCC) :</string>
+    <string name="mobile_network_code">Code de réseau mobile (MNC) :</string>
+    <string name="cellid">Cellule ID (CID) :</string>
+    <string name="area">Code région :</string>
 </resources>

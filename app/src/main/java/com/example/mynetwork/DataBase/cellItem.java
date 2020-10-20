@@ -11,55 +11,54 @@ public class cellItem {
         @PrimaryKey
         @NonNull
         @ColumnInfo(name = "cid")
-        private String cid;
+        private int cid;
         @ColumnInfo(name = "mcc")
-        private String mcc;
+        private int mcc;
         @ColumnInfo(name = "mnc")
-        private String mnc;
+        private int mnc;
         @ColumnInfo(name = "area")
-        private String area;
+        private int area;
         @ColumnInfo(name = "radio")
         private String radio;
         @ColumnInfo(name = "lon")
-        private String lon;
+        private double lon;
         @ColumnInfo(name = "lat")
-        private String lat;
+        private double lat;
         @ColumnInfo(name = "range")
-        private String range;
+        private int range;
 
     public cellItem() {
     }
 
-    @NonNull
-    public String getCid() {
+    public int getCid() {
         return cid;
     }
 
-    public void setCid(@NonNull String cid) {
+    public void setCid(int cid) {
         this.cid = cid;
     }
 
-    public String getMcc() {
+    public int getMcc() {
         return mcc;
     }
 
-    public void setMcc(String mcc) {
+    public void setMcc(int mcc) {
         this.mcc = mcc;
     }
 
-    public String getMnc() {
+    public int getMnc() {
         return mnc;
     }
 
-    public void setMnc(String mnc) {
+    public void setMnc(int mnc) {
         this.mnc = mnc;
     }
 
-    public String getArea() {
+    public int getArea() {
         return area;
     }
 
-    public void setArea(String area) {
+    public void setArea(int area) {
         this.area = area;
     }
 
@@ -71,27 +70,27 @@ public class cellItem {
         this.radio = radio;
     }
 
-    public String getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(String lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
 
-    public String getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public String getRange() {
+    public int getRange() {
         return range;
     }
 
-    public void setRange(String range) {
+    public void setRange(int range) {
         this.range = range;
     }
 

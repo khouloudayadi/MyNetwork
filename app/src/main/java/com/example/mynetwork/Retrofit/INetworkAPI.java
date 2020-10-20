@@ -1,15 +1,12 @@
 package com.example.mynetwork.Retrofit;
 
 
-import com.example.mynetwork.Model.Cell;
 import com.example.mynetwork.Model.CellModel;
+import com.example.mynetwork.Model.addCellModel;
 import com.example.mynetwork.Model.predict;
 import com.google.gson.JsonObject;
 
-import java.util.List;
-
 import io.reactivex.Observable;
-import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -25,4 +22,7 @@ public interface INetworkAPI {
     Observable<CellModel> getCell();
     //Call<List<Cell>> getCell();
 
+    @Headers({"Content-Type:application/json"})
+    @POST("addCell")
+    Observable<addCellModel> addCell(@Body JsonObject cell);
 }

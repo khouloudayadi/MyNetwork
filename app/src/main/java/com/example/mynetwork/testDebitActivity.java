@@ -168,7 +168,7 @@ public class testDebitActivity extends AppCompatActivity {
             @Override
             public void onClick(KAlertDialog kAlertDialog) {
                 alert_no_conn.dismiss();
-                Common.cpt_no_internet = 0 ;
+                Common.cpt_no_conn = 0 ;
             }
         });
     }

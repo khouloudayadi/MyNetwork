@@ -76,5 +76,11 @@
     //mapbox
     <string name="access_token" translatable="false">pk.eyJ1IjoiYXlhZGlraG91bG91ZCIsImEiOiJja2Q1dWthM3cwNGJpMnBzYzZpNnRqc2t4In0.Lmj_vPp5beqQhKW-2ktX0w</string>
     <string name="tts">you have %s and %s kilometer</string>
+    <string name="distance_to_cell">Distance to Cell :</string>
+    <string name="network_type">Network type : </string>
+    <string name="mobile_country_code">Mobile Country Code (MCC) : </string>
+    <string name="mobile_network_code">mobile network code (MNC) :</string>
+    <string name="cellid">Cell ID (CID) :</string>
+    <string name="area">Area :</string>
 
 </resources>

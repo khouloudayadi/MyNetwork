@@ -35,8 +35,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import dmax.dialog.SpotsDialog;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class SplashScreen extends AppCompatActivity {
@@ -60,49 +62,78 @@ public class SplashScreen extends AppCompatActivity {
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse response) {
                         progressBar.setVisibility(View.VISIBLE);
-                        compositeDisposable.add(myNetworkAPI.getCell()
+                        cellDataSource.countItemCell()
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(cellModel -> {
-                                            if(cellModel.isSuccess()){
-                                                for (Cell cell : cellModel.getResult()) {
-                                                    cellItem cellItem = new cellItem();
-                                                    cellItem.setRadio(cell.getRadio());
-                                                    cellItem.setCid(String.valueOf(cell.getCid()));
-                                                    cellItem.setArea(String.valueOf(cell.getArea()));
-                                                    cellItem.setMcc(String.valueOf(cell.getMcc()));
-                                                    cellItem.setMnc(String.valueOf(cell.getMnc()));
-                                                    cellItem.setLat(String.valueOf(cell.getLat()));
-                                                    cellItem.setLon(String.valueOf(cell.getLon()));
-                                                    cellItem.setRange(String.valueOf(cell.getRange()));
-                                                    cells.add(cellItem);
-                                                }
-                                                compositeDisposable.add(cellDataSource.insertAll(cells)
-                                                        .subscribeOn(Schedulers.io())
-                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                        .subscribe(()->
-                                                                {
-                                                                    Log.d("addCell", String.valueOf(cells.size()));
-                                                                    Intent home = new Intent(SplashScreen.this,HomeActivity.class);
-                                                                    startActivity(home);
-                                                                    finish();
-                                                                },
-                                                                throwable ->
-                                                                {
-                                                                    Log.d("addedCell",throwable.getMessage());
-                                                                })
-                                                );
-                                            }
-                                            else{
-                                                Log.d("getCellDB", cellModel.getMessage());
-                                            }
-                                        },
-                                        throwable -> {
-                                            Log.d("getCellDB", throwable.getMessage());
-                                            Toast.makeText(SplashScreen.this,R.string.check_connection,Toast.LENGTH_LONG).show();
+                                .subscribe(new SingleObserver<Integer>() {
+                                    @Override
+                                    public void onSubscribe(Disposable d) {
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Integer integer) {
+                                        Log.i("countCell", String.valueOf(integer));
+                                        if(integer > 0){
+                                            Intent home = new Intent(SplashScreen.this,HomeActivity.class);
+                                            startActivity(home);
+                                            finish();
                                         }
-                                )
-                        );
+                                        else{
+
+                                            compositeDisposable.add(myNetworkAPI.getCell()
+                                                    .subscribeOn(Schedulers.io())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(cellModel -> {
+                                                                if(cellModel.isSuccess()){
+                                                                    for (Cell cell : cellModel.getResult()) {
+                                                                        cellItem cellItem = new cellItem();
+                                                                        cellItem.setRadio(cell.getRadio());
+                                                                        cellItem.setCid(cell.getCid());
+                                                                        cellItem.setArea(cell.getArea());
+                                                                        cellItem.setMcc(cell.getMcc());
+                                                                        cellItem.setMnc(cell.getMnc());
+                                                                        cellItem.setLat(cell.getLat());
+                                                                        cellItem.setLon(cell.getLon());
+                                                                        cellItem.setRange(cell.getRange());
+                                                                        cells.add(cellItem);
+                                                                    }
+                                                                    compositeDisposable.add(cellDataSource.insertAll(cells)
+                                                                            .subscribeOn(Schedulers.io())
+                                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                                            .subscribe(()->
+                                                                                    {
+                                                                                        Log.d("addCell", String.valueOf(cells.size()));
+                                                                                        Intent home = new Intent(SplashScreen.this,HomeActivity.class);
+                                                                                        startActivity(home);
+                                                                                        finish();
+                                                                                    },
+                                                                                    throwable ->
+                                                                                    {
+                                                                                        Log.d("addedCell",throwable.getMessage());
+                                                                                    })
+                                                                    );
+                                                                }
+                                                                else{
+                                                                    Log.d("getCellDB", cellModel.getMessage());
+                                                                }
+                                                            },
+                                                            throwable -> {
+                                                                Log.d("getCellDB", throwable.getMessage());
+                                                                Toast.makeText(SplashScreen.this,R.string.check_connection,Toast.LENGTH_LONG).show();
+                                                                finish();
+                                                            }
+
+                                                    )
+                                            );
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        Log.i("countCell",e.getMessage());
+                                    }
+                                });
 
                     }
                     @Override
@@ -137,4 +168,7 @@ public class SplashScreen extends AppCompatActivity {
         cellDataSource = new localCellDataSource(cellDataBase.getInstance(this).cellDAO());
         myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
     }
+
+
+
 }
