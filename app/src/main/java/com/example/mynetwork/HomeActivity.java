@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -26,18 +25,14 @@ import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
-import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.telephony.cdma.CdmaCellLocation;
-import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,11 +53,8 @@ import com.example.mynetwork.DataBase.cellDataBase;
 import com.example.mynetwork.DataBase.cellDataSource;
 import com.example.mynetwork.DataBase.cellItem;
 import com.example.mynetwork.DataBase.localCellDataSource;
-import com.example.mynetwork.Model.Cell;
-import com.example.mynetwork.Model.CellModel;
 import com.example.mynetwork.Retrofit.INetworkAPI;
 import com.example.mynetwork.Retrofit.RetrofitClient;
-import com.example.mynetwork.Utile.NotificationHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonObject;
@@ -71,9 +63,11 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.geocoding.v5.GeocodingCriteria;
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
+import com.mapbox.core.exceptions.ServicesException;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
@@ -93,8 +87,6 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.localization.LocalizationPlugin;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
@@ -105,13 +97,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -120,11 +107,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dmax.dialog.SpotsDialog;
-import io.reactivex.Scheduler;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -183,12 +167,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private INetworkAPI myNetworkAPI;
     //Variable
     private int rssi;
-    double start_lat, start_lon, end_lat, end_lon, vitesse;
+    private double start_lat, start_lon, end_lat, end_lon, vitesse;
     private String network, datetime, carrierName;
-    int cid, mcc, mnc, area, range;
-    String radio;
+    private int cid, mcc, mnc, area, range;
+    private String radio;
+    private String address="";
     double lat_cell, lon_cell;
     boolean error;
+    int cptOnMapClick = 0;
 
     //room
     private cellDataSource cellDataSource;
@@ -529,7 +515,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
-                map.addOnMapClickListener(HomeActivity.this);
+                map.addOnMapClickListener(HomeActivity.this::onMapClick);
                 LocalizationPlugin localizationPlugin = new LocalizationPlugin(mapView, mapboxMap, style);
                 try {
                     localizationPlugin.matchMapLanguageWithDeviceDefault();
@@ -585,9 +571,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             if (map != null) {
                 Style style = map.getStyle();
                 if (style != null) {
-
                     dialog.show();
-                    //get current location and search location
+                    Point destinationPoint = Point.fromLngLat(((Point) selectedCarmenFeature.geometry()).longitude(),
+                            ((Point) selectedCarmenFeature.geometry()).latitude());
+                    end_lat = ((Point) selectedCarmenFeature.geometry()).latitude();
+                    end_lon = ((Point) selectedCarmenFeature.geometry()).longitude();
+
                     Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
                             locationComponent.getLastKnownLocation().getLatitude());
 
@@ -596,74 +585,89 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     vitesse = locationComponent.getLastKnownLocation().getSpeed();
                     datetime = String.valueOf(locationComponent.getLastKnownLocation().getTime());
 
-                    Point destinationPoint = Point.fromLngLat(((Point) selectedCarmenFeature.geometry()).longitude(),
-                            ((Point) selectedCarmenFeature.geometry()).latitude());
-                    end_lat = ((Point) selectedCarmenFeature.geometry()).latitude();
-                    end_lon = ((Point) selectedCarmenFeature.geometry()).longitude();
-
-                    // Move map camera to the selected location
-                    map.animateCamera(CameraUpdateFactory.newCameraPosition(
-                            new CameraPosition.Builder()
-                                    .target(new LatLng(end_lat, end_lon))
-                                    .zoom(10)
-                                    .build()));
-
-
-                    // Create an Icon object for the marker to use
-                    IconFactory iconFactory = IconFactory.getInstance(HomeActivity.this);
-                    Icon icon = iconFactory.fromResource(R.drawable.mapbox_marker_icon_default);
-
-                    // Add the marker to the map
-                    if(markerConnx != null) {
-                        markerConnx.remove();
-                    }
-
-                    markerConnx = map.addMarker(new MarkerOptions()
-                            .position(new LatLng(end_lat, end_lon))
-                            .title("selectedCarmenFeature.toJson()")
-                            .icon(icon));
-
+                    reverseGeocode(Point.fromLngLat(end_lon,end_lat));
                     getRoute(originPoint, destinationPoint);
                     getTimeConnectivite(datetime,start_lat,start_lon,end_lat,end_lon,vitesse);
                 }
             }
         }
     }
-
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
-        dialog.show();
-        Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
-        end_lat = point.getLatitude();
-        end_lon = point.getLongitude();
+        if(cptOnMapClick == 1){
+            dialog.show();
+            Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
+            end_lat = point.getLatitude();
+            end_lon = point.getLongitude();
 
-        Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
-                locationComponent.getLastKnownLocation().getLatitude());
-        start_lat = locationComponent.getLastKnownLocation().getLatitude();
-        start_lon = locationComponent.getLastKnownLocation().getLongitude();
-        vitesse = locationComponent.getLastKnownLocation().getSpeed();
-        datetime = String.valueOf(locationComponent.getLastKnownLocation().getTime());
-        /*Date date = new Date(locationComponent.getLastKnownLocation().getTime());
-         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-         datetime = dateFormat.format(date);*/
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(point.getLatitude(), point.getLongitude()),8));
+            Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
+                    locationComponent.getLastKnownLocation().getLatitude());
+            start_lat = locationComponent.getLastKnownLocation().getLatitude();
+            start_lon = locationComponent.getLastKnownLocation().getLongitude();
+            vitesse = locationComponent.getLastKnownLocation().getSpeed();
+            datetime = String.valueOf(locationComponent.getLastKnownLocation().getTime());
+            /*Date date = new Date(locationComponent.getLastKnownLocation().getTime());
+             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+             datetime = dateFormat.format(date);*/
 
-        // Create an Icon object for the marker to use
-        IconFactory iconFactory = IconFactory.getInstance(HomeActivity.this);
-        Icon icon = iconFactory.fromResource(R.drawable.mapbox_marker_icon_default);
+            reverseGeocode(Point.fromLngLat(end_lon, end_lat));
 
-        // Add the marker to the map
-        if(markerConnx != null) {
-            markerConnx.remove();
+            getRoute(originPoint, destinationPoint);
+            getTimeConnectivite(datetime,start_lat,start_lon,end_lat,end_lon,vitesse);
+            cptOnMapClick = 0;
+            return true;
         }
+        return false;
+    }
 
-        markerConnx = map.addMarker(new MarkerOptions()
-                .position(new LatLng(end_lat, end_lon))
-                .icon(icon));
+    public void reverseGeocode (final Point point){
+        try {
+            MapboxGeocoding client = MapboxGeocoding.builder()
+                    .accessToken(getString(R.string.access_token))
+                    .query(Point.fromLngLat(point.longitude(),point.latitude()))
+                    .geocodingTypes(GeocodingCriteria.TYPE_PLACE)
+                    .build();
+            client.enqueueCall(new Callback<GeocodingResponse>() {
+                @Override
+                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+                    if (response.body() != null) {
+                        List<CarmenFeature> results = response.body().features();
+                        if (results.size() > 0) {
+                            CarmenFeature feature = results.get(0);
+                            // Move map camera to the selected location
+                            map.animateCamera(CameraUpdateFactory.newCameraPosition(
+                                    new CameraPosition.Builder()
+                                            .target(new LatLng(point.latitude(), point.longitude()))
+                                            .zoom(10)
+                                            .build()));
 
-        getRoute(originPoint, destinationPoint);
-        getTimeConnectivite(datetime,start_lat,start_lon,end_lat,end_lon,vitesse);
-        return true;
+                            // Create an Icon object for the marker to use
+                            IconFactory iconFactory = IconFactory.getInstance(HomeActivity.this);
+                            Icon icon = iconFactory.fromResource(R.drawable.mapbox_marker_icon_default);
+
+                            // Add the marker to the map
+                            if(markerConnx != null) {
+                                markerConnx.remove();
+                            }
+
+                            markerConnx = map.addMarker(new MarkerOptions()
+                                    .position(new LatLng(point.latitude(), point.longitude()))
+                                    .title(feature.placeName())
+                                    .icon(icon));
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
+                    //Timber.e("Geocoding Failure: %s", throwable.getMessage());
+                    Log.d("address", throwable.getMessage());
+                }
+            });
+        }
+        catch (ServicesException servicesException) {
+            Timber.e("Error geocoding: %s", servicesException.toString());
+            servicesException.printStackTrace();
+        }
     }
 
     private void getRoute(Point origin, Point destination) {
@@ -797,8 +801,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 super.onDataConnectionStateChanged(state, networkType);
                 switch (networkType) {
                     case TelephonyManager.NETWORK_TYPE_UNKNOWN:
-                        Picasso.get().load(R.drawable.ic_network_disable_signal).into(img_type_network);
-                        txt_sub_type_network.setText(R.string.non_connecte);
                         searchBestCell();
                         break;
                     case TelephonyManager.NETWORK_TYPE_GPRS:
@@ -865,6 +867,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @RequiresApi(api = JELLY_BEAN_MR1)
     public void showView(){
+        cptOnMapClick = 1;
         layout_absence_connx.setVisibility(View.GONE);
         fab_location_search.setVisibility(View.VISIBLE);
         layout_signal.setVisibility(View.VISIBLE);
@@ -1073,11 +1076,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void searchBestCell(){
+        cptOnMapClick = 0;
+        //pour tester pas +
+        txt_nom_operateur.setText(carrierName);
+        coordinator_layout_time.setVisibility(View.VISIBLE);
+        txt_sub_type_network.setVisibility(View.VISIBLE);
+
+        Picasso.get().load(R.drawable.ic_network_disable_signal).into(img_type_network);
+        txt_sub_type_network.setText(R.string.non_connecte);
         layout_signal.setVisibility(View.GONE);
         layout_absence_connx.setVisibility(View.VISIBLE);
         fab_location_search.setVisibility(View.GONE);
         fab_info_cell.setVisibility(View.VISIBLE);
-
 
         if(compositeDisposable != null){
             compositeDisposable.clear();
@@ -1154,7 +1164,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         txt_lat.setText(String.valueOf(bestCell.getLat()));
                         txt_lon.setText(String.valueOf(bestCell.getLon()));
 
-
                     }
                 },throwable -> { Log.i("searchcell",throwable.getMessage());})
         );
@@ -1196,7 +1205,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
 }
+
 
 
 
