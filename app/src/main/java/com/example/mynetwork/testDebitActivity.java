@@ -88,6 +88,7 @@ public class testDebitActivity extends AppCompatActivity {
     Button startButton;
     @BindView(R.id.txt_state)
     TextView txt_state;
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -209,7 +210,6 @@ public class testDebitActivity extends AppCompatActivity {
                 currentLocation = locationResult.getLastLocation();
                 lat_user = locationResult.getLastLocation().getLatitude();
                 lon_user = locationResult.getLastLocation().getLongitude();
-
             }
         };
 
@@ -236,6 +236,7 @@ public class testDebitActivity extends AppCompatActivity {
     }
 
     private void testDebit() {
+        Log.d("location1", String.valueOf(lat_user));
         pingTextView.setText("0 ms");
         downloadTextView.setText("0 Mbps");
         uploadTextView.setText("0 Mbps");
@@ -258,10 +259,7 @@ public class testDebitActivity extends AppCompatActivity {
                 int timeCount = 60;
                 while (!getSpeedTestHostsHandler.isFinished()) {
                     timeCount--;
-                    try {
-                        sleep(100);
-                    } catch (InterruptedException e) {
-                    }
+                    try { sleep(100);} catch (InterruptedException e) {}
                     if (timeCount <= 0) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -280,8 +278,11 @@ public class testDebitActivity extends AppCompatActivity {
                         return;
                     }
                 }
+
                 if (lat_user == 0.0) {
-                    Log.d("ok", "ok");
+                    try {
+                        sleep(2000);
+                    } catch (InterruptedException e) {}
                     testDebit();
                 }
                 else {
@@ -291,16 +292,16 @@ public class testDebitActivity extends AppCompatActivity {
                     double tmp = 19349458; //plus grand distance entre serveur et user
                     double dist = 0.0;
                     int findServerIndex = 0;
-                    for (int index : mapKey.keySet()) {
-                        Location source = new Location("Source");
-                        source.setLatitude(lat_user);
-                        source.setLongitude(lon_user);
+                    Location source = new Location("Source");
+                    source.setLatitude(lat_user);
+                    source.setLongitude(lon_user);
+                    Log.d("location2", String.valueOf(source));
 
+                    for (int index : mapKey.keySet()) {
                         List<String> ls = mapValue.get(index);
                         Location dest = new Location("Dest");
                         dest.setLatitude(Double.parseDouble(ls.get(0)));
                         dest.setLongitude(Double.parseDouble(ls.get(1)));
-
                         double distance = source.distanceTo(dest);
                         if (tmp > distance) {
                             tmp = distance;

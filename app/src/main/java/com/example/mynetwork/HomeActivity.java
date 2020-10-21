@@ -1185,15 +1185,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onPause() {
-        TTS.stop();
+       TTS.stop();
         mapView.onPause();
         super.onPause();
     }
 
+    @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onStop() {
-        super.onStop();
+        compositeDisposable.clear();
+        handler.removeCallbacks(runnable);
+        telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
         mapView.onStop();
+        super.onStop();
     }
 
     @RequiresApi(api = JELLY_BEAN_MR1)
