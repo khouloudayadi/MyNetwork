@@ -41,6 +41,10 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +77,7 @@ public class testDebitActivity extends AppCompatActivity {
     android.app.AlertDialog dialog;
     AlertDialog alertDialog;
     KAlertDialog alert_no_conn;
+    URL url = null;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -120,9 +125,29 @@ public class testDebitActivity extends AppCompatActivity {
                         alert_no_conn.show();
                     }
                     else{
-                        dialog.show();
+                        /*dialog.show();
                         getDeviceLocation();
-                        testDebit();
+                        testDebit();*/
+                        try {
+                            url = new URL("http://clients3.google.com/generate_204");
+                            HttpURLConnection httpUrlConnection =  (HttpURLConnection) url.openConnection();
+                            httpUrlConnection.setRequestProperty("User-Agent", "android");
+                            httpUrlConnection.setRequestProperty("Connection", "close");
+                            httpUrlConnection.setConnectTimeout(1500); // Timeout is in seconds
+                            httpUrlConnection.connect();
+                            if (httpUrlConnection.getResponseCode() == 204 && httpUrlConnection.getContentLength() ==0) {
+                                //Toast.makeText(testDebitActivity.this,"connection established",Toast.LENGTH_LONG).show();
+                                dialog.show();
+                                getDeviceLocation();
+                                testDebit();
+                            } else {
+                                Toast.makeText(testDebitActivity.this,R.string.error_connection,Toast.LENGTH_LONG).show();
+                            }
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } else {
                     alertDialog.show();
@@ -163,7 +188,7 @@ public class testDebitActivity extends AppCompatActivity {
 
         alert_no_conn = new KAlertDialog(this);
         alert_no_conn.setContentText(getResources().getString(R.string.check_connection));
-        alert_no_conn.setContentTextSize(20);
+        alert_no_conn.setContentTextSize(18);
         alert_no_conn.setConfirmText("OK");
         alert_no_conn.setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
             @Override
@@ -264,7 +289,7 @@ public class testDebitActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), R.string.Pas_de_connection, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), R.string.error_connection, Toast.LENGTH_LONG).show();
                                 //Restart Test
                                 startButton.setEnabled(true);
                                 startButton.setTextSize(16);
@@ -281,6 +306,7 @@ public class testDebitActivity extends AppCompatActivity {
 
                 if (lat_user == 0.0) {
                     try {
+                        Log.d("lat_user","ok");
                         sleep(2000);
                     } catch (InterruptedException e) {}
                     testDebit();
@@ -511,4 +537,8 @@ public class testDebitActivity extends AppCompatActivity {
 
 
     }
+
+
+
+
 }

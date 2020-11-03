@@ -119,7 +119,7 @@ public class SplashScreen extends AppCompatActivity {
                                                             },
                                                             throwable -> {
                                                                 Log.d("getCellDB", throwable.getMessage());
-                                                                Toast.makeText(SplashScreen.this,R.string.check_connection,Toast.LENGTH_LONG).show();
+                                                                Toast.makeText(SplashScreen.this,R.string.errorServer,Toast.LENGTH_LONG).show();
                                                                 finish();
                                                             }
 

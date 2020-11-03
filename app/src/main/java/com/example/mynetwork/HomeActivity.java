@@ -175,6 +175,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     double lat_cell, lon_cell;
     boolean error;
     int cptOnMapClick = 0;
+    private boolean listen=false;
 
     //room
     private cellDataSource cellDataSource;
@@ -403,7 +404,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Mon Réseau");
-            String shareMessage = "\n Mon Réseau \n Est une application mobile permettant de déterminer le temps de disponibilité \n" + "de la connexion réseau pendant un trajet ainsi que \n" + " la qualité de la bande passante" ;
+            String shareMessage = "\n Mon Réseau \nEst une application mobile permettant de déterminer le temps de disponibilité de la connexion réseau pendant un trajet ainsi que la qualité de la bande passante" ;
             shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
             startActivity(Intent.createChooser(shareIntent, "choose one"));
@@ -423,8 +424,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 
         if(activeNetworkInfo == null ){
-            /*Common.cpt_wifi=0;
             alert_wifi.dismiss();
+            Common.cpt_wifi=0;
             Picasso.get().load(R.drawable.ic_no_internet).into(img_type_network);
             txt_nom_operateur.setText(carrierName);
             txt_sub_type_network.setText(R.string.non_connecte);
@@ -433,9 +434,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             layout_absence_connx.setVisibility(View.GONE);
             if(!alert_no_conn.isShowing()) {
                 Common.cpt_no_conn +=1;
-                if (Common.cpt_no_conn < 2){
+                if (Common.cpt_no_conn == 1){
                     alert_no_conn.setContentText(getResources().getString(R.string.check_connection));
-                    alert_no_conn.setContentTextSize(20);
+                    alert_no_conn.setContentTextSize(18);
                     alert_no_conn.setConfirmText("OK");
                     alert_no_conn.setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
                         @Override
@@ -445,8 +446,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     });
                     alert_no_conn.show();
                 }
-            }*/
-            searchBestCell();
+            }
+            //searchBestCell();
         }
         else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
             Common.cpt_wifi=0;
@@ -463,8 +464,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             displayTypeNetwork();
         }
         else {
-            Common.cpt_no_conn = 0;
             alert_no_conn.dismiss();
+            Common.cpt_no_conn = 0;
 
             WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(this.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiManager.getConnectionInfo();
@@ -478,7 +479,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             coordinator_layout_time.setVisibility(View.GONE);
             if(!alert_wifi.isShowing()){
                 Common.cpt_wifi +=1;
-                if(Common.cpt_wifi < 2){
+                if(Common.cpt_wifi == 1){
                     alert_wifi.setTitleText(getResources().getString(R.string.alert_wifi_title));
                     alert_wifi.setContentText(getResources().getString(R.string.alert_wifi_text));
                     alert_wifi.setConfirmText("OK");
@@ -795,6 +796,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @RequiresApi(api = JELLY_BEAN_MR1)
     private void displayTypeNetwork() {
+        listen = true;
         ConnectionStateListener = new PhoneStateListener() {
             @Override
             public void onDataConnectionStateChanged(int state, int networkType) {
@@ -1195,7 +1197,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onStop() {
         compositeDisposable.clear();
         handler.removeCallbacks(runnable);
-        telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
+        if(listen){
+            telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
+        }
+        Common.cpt_no_conn = 0;
+        Common.cpt_wifi = 0;
         mapView.onStop();
         super.onStop();
     }
@@ -1205,8 +1211,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         compositeDisposable.clear();
         handler.removeCallbacks(runnable);
-        telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
-        super.onDestroy();
+        if(listen){
+            telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
+        }
+         super.onDestroy();
     }
 
     @Override

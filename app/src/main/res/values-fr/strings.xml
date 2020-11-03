@@ -35,7 +35,7 @@
     <string name="Sub_type">Sous-type de réseau :</string>
     <string name="non_connecte">Non Connecté à internet</string>
     <string name="connecetd_wifi">Connecté par Wi-Fi</string>
-    <string name="Pas_de_connection">Pas de connexion ...</string>
+    <string name="error_connection">Pas de connexion ...</string>
     <string name="check_connection">Vérifiez votre Connexion internet !</string>
     <string name="user_location_permission_explanation">Cette application a besoin d\'autorisations de localisation pour afficher ses fonctionnalités</string>
     <string name="user_location_permission_not_granted">Vous n\'avez pas accordé les autorisations de localisation</string>
@@ -65,4 +65,5 @@
     <string name="mobile_network_code">Code de réseau mobile (MNC) :</string>
     <string name="cellid">Cellule ID (CID) :</string>
     <string name="area">Code région :</string>
+    <string name="errorServer">Erreur de connexion au serveur. Veuillez réessayer</string>
 </resources>

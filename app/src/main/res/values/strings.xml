@@ -8,7 +8,6 @@
     <string name="communicate">Communicate</string>
     <string name="tester_debit">Test The Rate</string>
     <string name="network">My Network</string>
-    <string name="time">Connectivity uptime</string>
     <string name="carte_couverture">Map Cover</string>
     <string name="apropos">About</string>
     <string name="share">Share</string>
@@ -48,7 +47,7 @@
     <string name="dowload">DOWNLOAD</string>
     <string name="upload">UPLOAD</string>
     //toast
-    <string name="Pas_de_connection">Pas de connexion ...</string>
+    <string name="error_connection">Pas de connexion ...</string>
     <string name="check_connection">Check your Internet connection!</string>
     <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality</string>
     <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
@@ -72,7 +71,8 @@
     <string name="cancel_alert">Cancel</string>
     <string name="txt_unknown_network">Unknown network</string>
     <string name="wating_location">Waiting for get location ...</string>
-
+    //Toast
+    <string name="errorServer">Error connecting to server. please try again</string>
     //mapbox
     <string name="access_token" translatable="false">pk.eyJ1IjoiYXlhZGlraG91bG91ZCIsImEiOiJja2Q1dWthM3cwNGJpMnBzYzZpNnRqc2t4In0.Lmj_vPp5beqQhKW-2ktX0w</string>
     <string name="tts">you have %s and %s kilometer</string>
