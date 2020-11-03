@@ -4,17 +4,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.developer.kalert.KAlertDialog;
 import com.example.mynetwork.Common.Common;
 import com.example.mynetwork.DataBase.cellDataBase;
 import com.example.mynetwork.DataBase.cellDataSource;
@@ -30,6 +35,10 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,13 +55,18 @@ public class SplashScreen extends AppCompatActivity {
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     INetworkAPI myNetworkAPI;
     cellDataSource cellDataSource;
+    ConnectivityManager connectivityManager;
+    NetworkInfo activeNetworkInfo;
     List<cellItem> cells = new ArrayList<>();
     private ProgressBar progressBar;
+    URL url = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void  onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         init();
 
@@ -69,7 +83,6 @@ public class SplashScreen extends AppCompatActivity {
                                     @Override
                                     public void onSubscribe(Disposable d) {
                                     }
-
                                     @Override
                                     public void onSuccess(Integer integer) {
                                         Log.i("countCell", String.valueOf(integer));
@@ -80,7 +93,7 @@ public class SplashScreen extends AppCompatActivity {
                                         }
                                         else{
 
-                                            compositeDisposable.add(myNetworkAPI.getCell()
+                                            /*compositeDisposable.add(myNetworkAPI.getCell()
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe(cellModel -> {
@@ -124,7 +137,79 @@ public class SplashScreen extends AppCompatActivity {
                                                             }
 
                                                     )
-                                            );
+                                            );*/
+                                            if(activeNetworkInfo == null ) {
+                                                progressBar.setVisibility(View.GONE);
+                                                Toast.makeText(SplashScreen.this,R.string.check_connection,Toast.LENGTH_LONG).show();
+                                            }
+                                            else{
+                                                try {
+                                                    url = new URL("http://clients3.google.com/generate_204");
+                                                    HttpURLConnection httpUrlConnection =  (HttpURLConnection) url.openConnection();
+                                                    httpUrlConnection.setRequestProperty("User-Agent", "android");
+                                                    httpUrlConnection.setRequestProperty("Connection", "close");
+                                                    httpUrlConnection.setConnectTimeout(1500); // Timeout is in seconds
+                                                    httpUrlConnection.connect();
+                                                    if (httpUrlConnection.getResponseCode() == 204 && httpUrlConnection.getContentLength() ==0) {
+                                                        //progressBar.setVisibility(View.GONE);
+                                                        //Toast.makeText(SplashScreen.this,"connection established",Toast.LENGTH_LONG).show();
+                                                        compositeDisposable.add(myNetworkAPI.getCell()
+                                                                .subscribeOn(Schedulers.io())
+                                                                .observeOn(AndroidSchedulers.mainThread())
+                                                                .subscribe(cellModel -> {
+                                                                            if(cellModel.isSuccess()){
+                                                                                for (Cell cell : cellModel.getResult()) {
+                                                                                    cellItem cellItem = new cellItem();
+                                                                                    cellItem.setRadio(cell.getRadio());
+                                                                                    cellItem.setCid(cell.getCid());
+                                                                                    cellItem.setArea(cell.getArea());
+                                                                                    cellItem.setMcc(cell.getMcc());
+                                                                                    cellItem.setMnc(cell.getMnc());
+                                                                                    cellItem.setLat(cell.getLat());
+                                                                                    cellItem.setLon(cell.getLon());
+                                                                                    cellItem.setRange(cell.getRange());
+                                                                                    cells.add(cellItem);
+                                                                                }
+                                                                                compositeDisposable.add(cellDataSource.insertAll(cells)
+                                                                                        .subscribeOn(Schedulers.io())
+                                                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                                                        .subscribe(()->
+                                                                                                {
+                                                                                                    Log.d("addCell", String.valueOf(cells.size()));
+                                                                                                    Intent home = new Intent(SplashScreen.this,HomeActivity.class);
+                                                                                                    startActivity(home);
+                                                                                                    finish();
+                                                                                                },
+                                                                                                throwable ->
+                                                                                                {
+                                                                                                    Log.d("addedCell",throwable.getMessage());
+                                                                                                })
+                                                                                );
+                                                                            }
+                                                                            else{
+                                                                                Log.d("getCellDB", cellModel.getMessage());
+                                                                            }
+                                                                        },
+                                                                        throwable -> {
+                                                                            Log.d("getCellDB", throwable.getMessage());
+                                                                            Toast.makeText(SplashScreen.this,R.string.errorServer,Toast.LENGTH_LONG).show();
+                                                                            finish();
+                                                                        }
+                                                                )
+                                                        );
+                                                    }
+                                                    else {
+                                                        progressBar.setVisibility(View.GONE);
+                                                        Toast.makeText(SplashScreen.this,R.string.error_connection,Toast.LENGTH_LONG).show();
+                                                        finish();
+                                                    }
+                                                } catch (MalformedURLException e) {
+                                                    e.printStackTrace();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
 
                                         }
                                     }
@@ -154,7 +239,6 @@ public class SplashScreen extends AppCompatActivity {
                                     .show();
                         }
                     }
-
                     @Override
                     public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
                         token.continuePermissionRequest();
@@ -167,6 +251,8 @@ public class SplashScreen extends AppCompatActivity {
     private void init() {
         cellDataSource = new localCellDataSource(cellDataBase.getInstance(this).cellDAO());
         myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
     }
 
 
