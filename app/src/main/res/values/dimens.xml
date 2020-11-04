@@ -6,8 +6,8 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="padding_layout">5dp</dimen>
-    <dimen name="text_size">18sp</dimen>
-    <dimen name="text_sub_size">16sp</dimen>
+    <dimen name="text_size">19sp</dimen>
+    <dimen name="text_sub_size">18sp</dimen>
     <dimen name="txt_details">15sp</dimen>
     <dimen name="margin_btn">8dp</dimen>
     <dimen name="padding_card">8dp</dimen>

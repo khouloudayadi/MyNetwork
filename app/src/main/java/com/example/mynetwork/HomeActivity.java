@@ -157,8 +157,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private LocationComponent locationComponent;
     private LocationManager locationManager;    //search place
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
-    Marker markerConnx;
-    Marker markerSConnx;
+    Marker markerConnx=null;
+    Marker markerSConnx=null;
     Icon icon;
     //get route
     private DirectionsRoute currentRoute;
@@ -436,12 +436,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if(activeNetworkInfo == null ){
             alert_wifi.dismiss();
             Common.cpt_wifi=0;
-            Picasso.get().load(R.drawable.ic_no_internet).into(img_type_network);
-            txt_nom_operateur.setText(carrierName);
-            txt_sub_type_network.setText(R.string.non_connecte);
             layout_signal.setVisibility(View.GONE);
             coordinator_layout_time.setVisibility(View.GONE);
             layout_absence_connx.setVisibility(View.GONE);
+            Picasso.get().load(R.drawable.ic_no_internet).into(img_type_network);
+            txt_nom_operateur.setText(carrierName);
+            txt_sub_type_network.setText(R.string.non_connecte);
             if(!alert_no_conn.isShowing()) {
                 Common.cpt_no_conn +=1;
                 if (Common.cpt_no_conn == 1){
@@ -503,7 +503,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
-        refresh(1000);
+        refresh(500);
     }
 
     public void refresh(int milliseconds){
@@ -521,7 +521,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(15);
+        this.map.setMinZoomPreference(8);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -626,7 +626,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             reverseGeocode(Point.fromLngLat(end_lon, end_lat));
             getRoute(originPoint, destinationPoint);
             getTimeConnectivite(timeStamp,start_lat,start_lon,end_lat,end_lon,vitesse);
-            cptOnMapClick = 0;
+            //cptOnMapClick = 0;
             return true;
         }
         return false;
@@ -882,9 +882,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = JELLY_BEAN_MR1)
     public void showView(){
         cptOnMapClick = 1;
-        layout_absence_connx.setVisibility(View.GONE);
-        fab_location_search.setVisibility(View.VISIBLE);
         layout_signal.setVisibility(View.VISIBLE);
+        fab_location_search.setVisibility(View.VISIBLE);
+        layout_absence_connx.setVisibility(View.GONE);
         fab_info_cell.setVisibility(View.GONE);
         if(markerSConnx != null) {
             markerSConnx.remove();
