@@ -398,9 +398,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_network) {
             network();
         }
-      /*else if (id == R.id.nav_temps_connectivite) {
-         startActivity(new Intent(HomeActivity.this,timeConnectiviteActivity.class) );
-     } */
         else if (id == R.id.nav_test_debit) {
             startActivity(new Intent(HomeActivity.this,testDebitActivity.class) );
         } else if (id == R.id.nav_share) {
@@ -436,9 +433,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void checkNetwork() {
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-
         if(activeNetworkInfo == null ){
-            /*alert_wifi.dismiss();
+            alert_wifi.dismiss();
             Common.cpt_wifi=0;
             Picasso.get().load(R.drawable.ic_no_internet).into(img_type_network);
             txt_nom_operateur.setText(carrierName);
@@ -460,10 +456,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     });
                     alert_no_conn.show();
                 }
-            }*/
-            searchBestCell();
-        }
+            }
 
+        }
         else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
             Common.cpt_wifi=0;
             Common.cpt_no_conn=0;

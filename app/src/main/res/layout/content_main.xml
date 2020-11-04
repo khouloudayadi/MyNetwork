@@ -71,7 +71,7 @@
             android:layout_height="wrap_content" />
         <TextView
             android:layout_width="wrap_content"
-            android:text="435"
+            android:text="0"
             android:id="@+id/txt_distance_to_cell"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
