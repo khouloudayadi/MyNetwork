@@ -31,6 +31,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -55,6 +58,10 @@ import com.example.mynetwork.DataBase.cellItem;
 import com.example.mynetwork.DataBase.localCellDataSource;
 import com.example.mynetwork.Retrofit.INetworkAPI;
 import com.example.mynetwork.Retrofit.RetrofitClient;
+import com.example.mynetwork.TestDebit.GetSpeedTestHostsHandler;
+import com.example.mynetwork.TestDebit.HttpDownloadTest;
+import com.example.mynetwork.TestDebit.HttpUploadTest;
+import com.example.mynetwork.TestDebit.PingTest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonObject;
@@ -99,6 +106,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -121,13 +130,15 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
+import static java.lang.Thread.sleep;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private TelephonyManager telephonyManager;
     private ConnectivityManager connectivityManager;
     private PhoneStateListener ConnectionStateListener;
-
+    GetSpeedTestHostsHandler getSpeedTestHostsHandler = null;
+    final DecimalFormat dec = new DecimalFormat("#.##");
     //List
     private List<CellInfo> cellInfoList = null;
     //Tag
@@ -168,10 +179,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     //Variable
     private int rssi;
     private double start_lat, start_lon, end_lat, end_lon, vitesse;
-    private String network, datetime, carrierName;
+    private String network, timeStamp, carrierName;
     private int cid, mcc, mnc, area, range;
     private String radio;
-    private String address="";
     double lat_cell, lon_cell;
     boolean error;
     int cptOnMapClick = 0;
@@ -200,7 +210,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.fab_info_cell) FloatingActionButton fab_info_cell;
     Toolbar toolbar;
     ImageView img_close_info;
-    TextView txt_radio,txt_mnc,txt_mcc,txt_area,txt_cid,txt_lat,txt_lon;
+    TextView txt_radio,txt_mnc,txt_mcc,txt_area,txt_cid,txt_lat,txt_lon,txt_address,txt_range;
 
 
     @RequiresApi(api = O)
@@ -276,6 +286,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         txt_cid=(TextView) info_cell.findViewById(R.id.txt_cid);
         txt_lat=(TextView) info_cell.findViewById(R.id.txt_lat);
         txt_lon=(TextView) info_cell.findViewById(R.id.txt_lon);
+        txt_range=(TextView) info_cell.findViewById(R.id.txt_range);
+        //txt_address=(TextView) info_cell.findViewById(R.id.txt_address);
 
         img_close_info=(ImageView) info_cell.findViewById(R.id.img_close);
         img_close_info.setOnClickListener(new View.OnClickListener() {
@@ -330,6 +342,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
+
+        //testDebit(35.8626285,10.5999459,169.2510821673623);
+
     }
 
     private void initView() {
@@ -363,7 +378,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         assert locationManager != null;
-
     }
 
     @Override
@@ -424,7 +438,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 
         if(activeNetworkInfo == null ){
-            alert_wifi.dismiss();
+            /*alert_wifi.dismiss();
             Common.cpt_wifi=0;
             Picasso.get().load(R.drawable.ic_no_internet).into(img_type_network);
             txt_nom_operateur.setText(carrierName);
@@ -446,9 +460,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     });
                     alert_no_conn.show();
                 }
-            }
-            //searchBestCell();
+            }*/
+            searchBestCell();
         }
+
         else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
             Common.cpt_wifi=0;
             Common.cpt_no_conn=0;
@@ -584,11 +599,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     start_lat = locationComponent.getLastKnownLocation().getLatitude();
                     start_lon = locationComponent.getLastKnownLocation().getLongitude();
                     vitesse = locationComponent.getLastKnownLocation().getSpeed();
-                    datetime = String.valueOf(locationComponent.getLastKnownLocation().getTime());
+                    timeStamp = String.valueOf(locationComponent.getLastKnownLocation().getTime());
 
                     reverseGeocode(Point.fromLngLat(end_lon,end_lat));
                     getRoute(originPoint, destinationPoint);
-                    getTimeConnectivite(datetime,start_lat,start_lon,end_lat,end_lon,vitesse);
+                    getTimeConnectivite(timeStamp,start_lat,start_lon,end_lat,end_lon,vitesse);
+                    //getTimeConnectivite("1604439592000",35.8629398,10.6000928,36.249384637790186,10.424755221131107,vitesse);
+
                 }
             }
         }
@@ -606,15 +623,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             start_lat = locationComponent.getLastKnownLocation().getLatitude();
             start_lon = locationComponent.getLastKnownLocation().getLongitude();
             vitesse = locationComponent.getLastKnownLocation().getSpeed();
-            datetime = String.valueOf(locationComponent.getLastKnownLocation().getTime());
+            timeStamp = String.valueOf(locationComponent.getLastKnownLocation().getTime());
             /*Date date = new Date(locationComponent.getLastKnownLocation().getTime());
              SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
              datetime = dateFormat.format(date);*/
 
             reverseGeocode(Point.fromLngLat(end_lon, end_lat));
-
             getRoute(originPoint, destinationPoint);
-            getTimeConnectivite(datetime,start_lat,start_lon,end_lat,end_lon,vitesse);
+            getTimeConnectivite(timeStamp,start_lat,start_lon,end_lat,end_lon,vitesse);
             cptOnMapClick = 0;
             return true;
         }
@@ -709,22 +725,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 });
     }
 
-    private void getTimeConnectivite(String datetime,double start_lat, double start_lon, double end_lat, double end_lon, double vitesse) {
-        Log.d("start_lat",String.valueOf(start_lat));
-        Log.d("start_lon",String.valueOf(start_lon));
-        Log.d("end_lat",String.valueOf(end_lat));
-        Log.d("end_lon",String.valueOf(end_lon));
-        Log.d("speed",String.valueOf(vitesse));
+    private void getTimeConnectivite(String timeStamp, double start_lat, double start_lon, double end_lat, double end_lon, double vitesse) {
+        Log.d("Time_lat1",String.valueOf(start_lat));
+        Log.d("Time_lon1",String.valueOf(start_lon));
+        Log.d("Time_lat2",String.valueOf(end_lat));
+        Log.d("Time_lon2",String.valueOf(end_lon));
+        Log.d("Time_speed",String.valueOf(vitesse));
+        Log.d("Time_timeStamp",timeStamp);
+        Log.d("Time_network",network);
 
         JsonObject predicTime = new JsonObject();
-        predicTime.addProperty("datetime",datetime);
         predicTime.addProperty("start_lat",start_lat);
         predicTime.addProperty("start_lon",start_lon);
         predicTime.addProperty("end_lat",end_lat);
         predicTime.addProperty("end_lon",end_lon);
         predicTime.addProperty("vitesse",vitesse);
+        predicTime.addProperty("timeStamp",timeStamp);
         predicTime.addProperty("network",network);
-
 
         if(compositeDisposable != null){
             compositeDisposable.clear();
@@ -1165,6 +1182,30 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         txt_mnc.setText(String.valueOf(bestCell.getMnc()));
                         txt_lat.setText(String.valueOf(bestCell.getLat()));
                         txt_lon.setText(String.valueOf(bestCell.getLon()));
+                        txt_range.setText(String.valueOf(bestCell.getRange())+ " mètre");
+                        /*MapboxGeocoding client = MapboxGeocoding.builder()
+                                .accessToken(getString(R.string.access_token))
+                                .query(Point.fromLngLat(bestCell.getLon(),bestCell.getLat()))
+                                .geocodingTypes(GeocodingCriteria.TYPE_PLACE)
+                                .build();
+                        client.enqueueCall(new Callback<GeocodingResponse>() {
+                            @Override
+                            public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+                                if (response.body() != null) {
+                                    List<CarmenFeature> results = response.body().features();
+                                    if (results.size() > 0) {
+                                        CarmenFeature feature = results.get(0);
+                                        Log.d("addressssss",feature.placeName());
+                                        txt_address.setText(feature.placeName());
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<GeocodingResponse> call, Throwable t) {
+                                Log.d("address", t.getMessage());
+                            }
+                        });*/
 
                     }
                 },throwable -> { Log.i("searchcell",throwable.getMessage());})
@@ -1223,7 +1264,168 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mapView.onLowMemory();
     }
 
+
+   private void testDebit(double lat_user,double lon_user, double timeConn) {
+        getSpeedTestHostsHandler = new GetSpeedTestHostsHandler();
+        getSpeedTestHostsHandler.run();
+        new Thread(new Runnable() {
+            public void run(){
+
+                //Get hosts
+                int timeCount = 60; //1min
+                while (!getSpeedTestHostsHandler.isFinished()) {
+                    timeCount--;
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                    if (timeCount <= 0) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d("Error Host","No Connection...");
+                            }
+
+                        });
+                        getSpeedTestHostsHandler = null;
+                        return;
+                    }
+                }
+
+                //Trouver le serveur le plus proche
+                HashMap<Integer, String> mapKey = getSpeedTestHostsHandler.getMapKey();
+                HashMap<Integer, List<String>> mapValue = getSpeedTestHostsHandler.getMapValue();
+                double tmp = 19349458; //plus grand distance entre serveur et user
+                double dist = 0.0;
+                int findServerIndex = 0;
+
+                for (int index : mapKey.keySet()) {
+                    Location source = new Location("Source");
+                    source.setLatitude(lat_user);
+                    source.setLongitude(lon_user);
+
+                    List<String> ls = mapValue.get(index);
+                    Location dest = new Location("Dest");
+                    dest.setLatitude(Double.parseDouble(ls.get(0)));
+                    dest.setLongitude(Double.parseDouble(ls.get(1)));
+
+                    double distance = source.distanceTo(dest);
+                    if (tmp > distance) {
+                        tmp = distance;
+                        dist = distance;
+                        findServerIndex = index;
+                    }
+                }
+                Log.d("findServerIndex", String.valueOf(findServerIndex));
+                String testAddr = mapKey.get(findServerIndex).replace("http://", "https://");
+                final List<String> info = mapValue.get(findServerIndex);
+                final double distance = dist;
+
+                if (info == null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("Error Host","There was a problem in getting Host Location. Try again later");
+                        }
+                    });
+                    return;
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("Host",String.format("Host Location: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
+                    }
+                });
+
+                //Reset value
+                Boolean downloadTestStarted = false;
+                Boolean downloadTestFinished = false;
+                Boolean uploadTestStarted = false;
+                Boolean uploadTestFinished = false;
+
+                //Init Test
+                final HttpDownloadTest downloadTest = new HttpDownloadTest(testAddr.replace(testAddr.split("/")[testAddr.split("/").length - 1], ""));
+                final HttpUploadTest uploadTest = new HttpUploadTest(testAddr);
+
+
+                //Tests
+                while (true) {
+                    if (!uploadTestStarted) {
+                        uploadTest.run();
+                        uploadTestStarted = true;
+                    }
+                    if (uploadTestFinished && !downloadTestStarted) {
+                        downloadTest.run();
+                        downloadTestStarted = true;
+                    }
+
+                    //Upload Test
+                    if (uploadTestFinished) {
+                            //Failure
+                            if (uploadTest.getFinalUploadRate() == 0) {
+                                Log.d("getDebitUL","Error Upload");
+                            } else {
+                                //Success
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.d("getDebitUL",dec.format(uploadTest.getFinalUploadRate()));//Mbps
+                                        Log.d("getVolumeUL",dec.format(uploadTest.getFinalUploadRate() * timeConn));//Mbits
+                                    }
+                                });
+                            }
+                        }
+
+                    //Download Test
+                    if (uploadTestFinished) {
+                        if (downloadTestFinished) {
+                            //Failure
+                            if (downloadTest.getFinalDownloadRate() == 0) {
+                                Log.d("getDebitDL","Error Download");
+                            } else {
+                                //Success
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Log.d("getDebitDL",dec.format(downloadTest.getFinalDownloadRate()));//Mbps
+                                        Log.d("getVolumeDL",dec.format(downloadTest.getFinalDownloadRate() * timeConn));//Mbits
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    //Test terminé
+                    if (downloadTestFinished && uploadTest.isFinished()) {
+                        break;
+                    }
+
+                    if (downloadTest.isFinished()) {
+                        downloadTestFinished = true;
+                    }
+                    if (uploadTest.isFinished()) {
+                        uploadTestFinished = true;
+                    }
+                    if (uploadTestStarted && !uploadTestFinished) {
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                        }
+                    } else {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                        }
+                    }
+                }
+
+            }
+        }).start();
+        Log.d("testDebit","finished");
+    }
 }
+
 
 
 

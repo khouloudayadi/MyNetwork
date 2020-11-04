@@ -1,4 +1,6 @@
-package com.example.mynetwork.Test;
+package com.example.mynetwork.TestDebit;
+
+import android.util.Log;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -44,6 +46,14 @@ public class HttpDownloadTest {
         return bd.doubleValue();
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public double getFinalDownloadRate() {
+        return round(finalDownloadRate, 2);
+    }
+
     public double getInstantDownloadRate() {
         return instantDownloadRate;
     }
@@ -55,14 +65,6 @@ public class HttpDownloadTest {
         } else {
             this.instantDownloadRate = 0.0;
         }
-    }
-
-    public double getFinalDownloadRate() {
-        return round(finalDownloadRate, 2);
-    }
-
-    public boolean isFinished() {
-        return finished;
     }
 
     public void run() {
@@ -90,7 +92,8 @@ public class HttpDownloadTest {
                 });
                 httpsConn.connect();
                 responseCode = httpsConn.getResponseCode();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 ex.printStackTrace();
                 break outer;
             }
@@ -114,18 +117,21 @@ public class HttpDownloadTest {
 
                     inputStream.close();
                     httpsConn.disconnect();
-                } else {
-                    System.out.println("Link not found...");
                 }
-            } catch (Exception ex) {
+                else {
+                    Log.d("ErrorDlLink","Link not found...");
+                }
+            }
+            catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
 
         endTime = System.currentTimeMillis();
         downloadElapsedTime = (endTime - startTime) / 1000.0;
-        finalDownloadRate = ((downloadedByte * 8) / (1000 * 1000.0)) / downloadElapsedTime;
-
+        finalDownloadRate = ((downloadedByte * 8) / 1000000.0) / downloadElapsedTime;  // bits to Mbits
+        Log.d("downloadedByte", String.valueOf(downloadedByte));
+        Log.d("downloadElapsedTime", String.valueOf(downloadElapsedTime));
         finished = true;
     }
 }

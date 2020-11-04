@@ -63,7 +63,10 @@
     <string name="network_type">Type de réseau : </string>
     <string name="mobile_country_code">Code de pays mobile (MCC) :</string>
     <string name="mobile_network_code">Code de réseau mobile (MNC) :</string>
+    <string name="range">Portée :</string>
     <string name="cellid">Cellule ID (CID) :</string>
     <string name="area">Code région :</string>
     <string name="errorServer">Erreur de connexion au serveur. Veuillez réessayer</string>
+    <string name="address">Adresse</string>
+    <string name="alert_best_antenne">"Soyez vigilant à votre environnement lorsque vous vous déplacer vers l'antenne la plus proche."</string>
 </resources>

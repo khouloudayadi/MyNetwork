@@ -1,4 +1,4 @@
-package com.example.mynetwork.Test;
+package com.example.mynetwork.TestDebit;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,7 +11,6 @@ public class PingTest {
     double instantRtt = 0;
     double avgRtt = 0.0;
     boolean finished = false;
-    boolean started = false;
 
     public PingTest(String serverIpAddress, int pingTryCount) {
         this.server = serverIpAddress;

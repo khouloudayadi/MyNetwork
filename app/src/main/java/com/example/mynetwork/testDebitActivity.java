@@ -31,10 +31,10 @@ import androidx.core.app.ActivityCompat;
 
 import com.developer.kalert.KAlertDialog;
 import com.example.mynetwork.Common.Common;
-import com.example.mynetwork.Test.GetSpeedTestHostsHandler;
-import com.example.mynetwork.Test.HttpDownloadTest;
-import com.example.mynetwork.Test.HttpUploadTest;
-import com.example.mynetwork.Test.PingTest;
+import com.example.mynetwork.TestDebit.GetSpeedTestHostsHandler;
+import com.example.mynetwork.TestDebit.HttpDownloadTest;
+import com.example.mynetwork.TestDebit.HttpUploadTest;
+import com.example.mynetwork.TestDebit.PingTest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -125,9 +125,6 @@ public class testDebitActivity extends AppCompatActivity {
                         alert_no_conn.show();
                     }
                     else{
-                        /*dialog.show();
-                        getDeviceLocation();
-                        testDebit();*/
                         try {
                             url = new URL("http://clients3.google.com/generate_204");
                             HttpURLConnection httpUrlConnection =  (HttpURLConnection) url.openConnection();
@@ -261,7 +258,6 @@ public class testDebitActivity extends AppCompatActivity {
     }
 
     private void testDebit() {
-        Log.d("location1", String.valueOf(lat_user));
         pingTextView.setText("0 ms");
         downloadTextView.setText("0 Mbps");
         uploadTextView.setText("0 Mbps");
@@ -321,7 +317,7 @@ public class testDebitActivity extends AppCompatActivity {
                     Location source = new Location("Source");
                     source.setLatitude(lat_user);
                     source.setLongitude(lon_user);
-                    Log.d("location2", String.valueOf(source));
+                    Log.d("location", String.valueOf(source));
 
                     for (int index : mapKey.keySet()) {
                         List<String> ls = mapValue.get(index);
@@ -359,6 +355,7 @@ public class testDebitActivity extends AppCompatActivity {
                         }
                     });
 
+                    Log.d("Distance", String.format("Host Location: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
 
                     //Reset value
                     final List<Double> downloadRateList = new ArrayList<>();

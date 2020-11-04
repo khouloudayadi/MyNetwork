@@ -1,4 +1,4 @@
-package com.example.mynetwork.Test;
+package com.example.mynetwork.TestDebit;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

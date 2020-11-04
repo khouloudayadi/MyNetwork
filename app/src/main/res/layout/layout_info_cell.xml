@@ -7,177 +7,239 @@
     app:cardElevation="5dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:weightSum="9"
-        android:layout_height="wrap_content">
+        android:orientation="vertical"
+        android:layout_height="match_parent">
         <LinearLayout
-            android:layout_width="0dp"
-            android:orientation="vertical"
-            android:layout_marginTop="6dp"
-            android:padding="5dp"
-            android:layout_weight="9"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="9"
             android:layout_height="wrap_content">
             <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_margin="3dp"
+                android:layout_width="0dp"
+                android:orientation="vertical"
+                android:layout_marginTop="6dp"
+                android:padding="5dp"
+                android:layout_weight="9"
                 android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/black"
-                    android:text="@string/network_type"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:id="@+id/txt_radio"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="GSM"
-                    android:layout_marginLeft="3dp"
-                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="@string/network_type"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:id="@+id/txt_radio"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="GSM"
+                        android:layout_marginLeft="3dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="@string/mobile_network_code"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:id="@+id/txt_mnc"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="2"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="@string/mobile_country_code"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="6055"
+                        android:id="@+id/txt_mcc"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="@string/cellid"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="1"
+                        android:id="@+id/txt_cid"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="@string/area"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="612"
+                        android:id="@+id/txt_area"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="@string/range"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="612"
+                        android:id="@+id/txt_range"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="Latitude :"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="35.6"
+                        android:id="@+id/txt_lat"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="Longitude"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:text="10.6"
+                        android:id="@+id/txt_lon"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <!--<LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_margin="3dp"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:textColor="@android:color/black"
+                        android:text="@string/address"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold|italic"
+                        android:layout_marginLeft="3dp"
+                        android:textColor="@android:color/darker_gray"
+                        android:id="@+id/txt_address"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>-->
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_margin="3dp"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/black"
-                    android:text="@string/mobile_network_code"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:id="@+id/txt_mnc"
-                    android:textStyle="bold|italic"
-                    android:layout_marginLeft="3dp"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="2"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_margin="3dp"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/black"
-                    android:text="@string/mobile_country_code"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:layout_marginLeft="3dp"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="6055"
-                    android:id="@+id/txt_mcc"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_margin="3dp"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/black"
-                    android:text="@string/cellid"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:layout_marginLeft="3dp"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="1"
-                    android:id="@+id/txt_cid"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_margin="3dp"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/black"
-                    android:text="@string/area"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:layout_marginLeft="3dp"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="612"
-                    android:id="@+id/txt_area"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_margin="3dp"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/black"
-                    android:text="Latitude :"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:layout_marginLeft="3dp"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="35.6"
-                    android:id="@+id/txt_lat"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_margin="3dp"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:textColor="@android:color/black"
-                    android:text="Longitude"
-                    android:layout_height="wrap_content" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="bold|italic"
-                    android:layout_marginLeft="3dp"
-                    android:textColor="@android:color/darker_gray"
-                    android:text="10.6"
-                    android:id="@+id/txt_lon"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/img_close"
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:src="@drawable/ic_close" />
         </LinearLayout>
-        <ImageView
-            android:id="@+id/img_close"
-            android:padding="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_close" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="@color/divider"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="15sp"
+                android:padding="7dp"
+                android:textColor="@android:color/darker_gray"
+                android:fontFamily="sans-serif-condensed-light"
+                android:text="@string/alert_best_antenne"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

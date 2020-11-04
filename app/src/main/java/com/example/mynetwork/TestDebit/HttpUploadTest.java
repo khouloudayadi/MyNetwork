@@ -1,4 +1,6 @@
-package com.example.mynetwork.Test;
+package com.example.mynetwork.TestDebit;
+
+import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.math.BigDecimal;
@@ -22,6 +24,7 @@ public class HttpUploadTest extends Thread {
     double finalUploadRate = 0.0;   //débit up
     long startTime;
 
+
     public HttpUploadTest(String fileURL) {
         this.fileURL = fileURL;
     }
@@ -43,6 +46,10 @@ public class HttpUploadTest extends Thread {
         return finished;
     }
 
+    public double getFinalUploadRate() {
+        return round(finalUploadRate, 2);
+    } // 1.499 ==>1.50
+
     public double getInstantUploadRate() { // get débit en cours de télechargement
         try {
             BigDecimal bd = new BigDecimal(uploadedKByte);
@@ -51,24 +58,22 @@ public class HttpUploadTest extends Thread {
         }
 
         if (uploadedKByte >= 0) {
-            long now = System.currentTimeMillis();
-            elapsedTime = (now - startTime) / 1000.0;
-            return round((Double) (((uploadedKByte / 1000.0) * 8) / elapsedTime), 2);
+            long now = System.currentTimeMillis();//millisecondes
+            elapsedTime = (now - startTime) / 1000.0;   //millisecondes to secondes
+            return round((Double) (((uploadedKByte / 1000.0) * 8) / elapsedTime), 2); // KByte to MByte : / 1000 | Byte to bit : *8   |= Mbps
         } else {
             return 0.0;
         }
     }
 
-    public double getFinalUploadRate() {
-        return round(finalUploadRate, 2);
-    } // 1.499 ==>1.50
+
 
     @Override
     public void run() {
         try {
             URL url = new URL(fileURL);
             uploadedKByte = 0;
-            startTime = System.currentTimeMillis();
+            startTime = System.currentTimeMillis();   //millisecondes
 
             //https://www.baeldung.com/java-executor-service-tutorial
             ExecutorService executor = Executors.newFixedThreadPool(4); // 4 threads asynchrone
@@ -85,8 +90,9 @@ public class HttpUploadTest extends Thread {
 
             long now = System.currentTimeMillis(); //time in milliseconds
             uploadElapsedTime = (now - startTime) / 1000.0;
-            finalUploadRate = (Double) (((uploadedKByte / 1000.0) * 8) / uploadElapsedTime);    //D=taille/temps |Ko --> Mo : /1000 | Byte --> bit: *8
-
+            finalUploadRate = (Double) (((uploadedKByte / 1000.0) * 8) / uploadElapsedTime);//D=taille/temps |Ko --> Mo : /1000 | Byte --> bit: *8
+            Log.d("uploadedKByte", String.valueOf(uploadedKByte));
+            Log.d("uploadElapsedTime", String.valueOf(uploadElapsedTime));
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -51,7 +51,7 @@
     <View
         android:layout_width="match_parent"
         android:background="@android:color/darker_gray"
-        android:layout_height="1dp"/>
+        android:layout_height="1.5dp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:padding="3dp"
@@ -125,6 +125,7 @@
             android:id="@+id/txt_descr_signal"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
             android:textSize="15sp"
             android:visibility="gone"
             android:layout_height="wrap_content" />
@@ -132,7 +133,7 @@
     </LinearLayout>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_margin="3dp"
+        android:layout_margin="2dp"
         android:visibility="gone"
         android:id="@+id/coordinator_layout_time"
         android:layout_height="match_parent">
@@ -164,7 +165,7 @@
                 android:id="@+id/fab_location_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginRight="10dp"
                 android:layout_gravity="end"
                 android:tint="@color/colorPrimary"
@@ -186,18 +187,19 @@
                 android:src="@drawable/ic_my_location_24"/>
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView_Time"
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
                 android:layout_below="@+id/fab_navigation"
-                android:layout_marginBottom="-7dp"
+                android:backgroundTint="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-13dp"
+                android:layout_marginTop="5dp"
                 app:cardCornerRadius="15dp"
-                app:cardElevation="10dp"
-                android:visibility="gone"
-                android:backgroundTint="@android:color/white">
+                app:cardElevation="9dp"
+                android:visibility="gone">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="20dp"
                     android:orientation="vertical">
                     <View
                         android:layout_width="60dp"
@@ -206,35 +208,34 @@
                         android:background="@color/colorPrimary"
                         android:layout_height="3dp"/>
                     <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:textStyle="bold"
-                            android:layout_gravity="center_horizontal"
-                            android:text="Disponibilité de la connexion réseau"
-                            android:textSize="17sp"/>
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textStyle="bold"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Disponibilité de la connexion réseau"
+                        android:textSize="17sp"/>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_weight="10"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:orientation="horizontal">
                         <ImageView
                             android:layout_width="40dp"
-                            android:layout_weight="1"
                             android:layout_height="50dp"
+                            android:layout_gravity="center"
                             android:id="@+id/img_speech"
-                            android:layout_marginBottom="4dp"
-                            android:layout_gravity="center_vertical"
                             android:src="@drawable/ic_speech_off_24"/>
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_weight="8"
+                            android:layout_marginLeft="10dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="3dp"
                                 android:id="@+id/txt_time_connectivite"
                                 android:textStyle="bold"
                                 android:fontFamily="sans-serif"
@@ -255,12 +256,9 @@
                             android:id="@+id/img_navigation"
                             android:layout_width="35dp"
                             android:layout_height="40dp"
-                            android:layout_marginRight="1dp"
-                            android:layout_marginBottom="1dp"
                             android:src="@drawable/ic_navigation_24"
-                            android:layout_gravity="center_vertical"
+                            android:layout_gravity="center"
                             app:tint="@android:color/holo_blue_dark" />
-
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
