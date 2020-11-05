@@ -148,8 +148,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private KAlertDialog alert_no_conn;
     private KAlertDialog alert_wifi;
     private AlertDialog alert_gps;
-    AlertDialog.Builder alert_info;
-    AlertDialog show;
+    AlertDialog.Builder alert_info_cell;
+    AlertDialog.Builder alert_info_conn;
+    AlertDialog show_info_cell;
+    AlertDialog show_info_conn;
     //mapBox
     private MapboxMap map;
     private PermissionsManager permissionsManager;
@@ -208,9 +210,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.txt_distance_to_cell) TextView txt_distance_to_cell;
     @BindView(R.id.fab_info_cell) FloatingActionButton fab_info_cell;
     Toolbar toolbar;
-    ImageView img_close_info;
-    TextView txt_radio,txt_mnc,txt_mcc,txt_area,txt_cid,txt_lat,txt_lon,txt_address,txt_range;
-
+    ImageView img_close_info_cell;
+    ImageView img_close_info_conn;
+    TextView txt_radio,txt_mnc,txt_mcc,txt_area,txt_cid,txt_lat,txt_lon,txt_address,txt_range,txt_volume_ul,txt_volume_dl;
 
     @RequiresApi(api = O)
     @OnClick(R.id.fab_my_location)
@@ -225,7 +227,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @OnClick(R.id.fab_info_cell)
     void fab_info_cell() {
-        show = alert_info.show();
+        show_info_cell = alert_info_cell.show();
+    }
+
+    @OnClick(R.id.img_detail)
+    void get_info_conn() {
+        show_info_conn = alert_info_conn.show();
     }
 
     @OnClick(R.id.img_drop_down)
@@ -274,10 +281,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         checkNetwork();
 
         View info_cell = LayoutInflater.from(this).inflate(R.layout.layout_info_cell,null);
-        alert_info = new AlertDialog.Builder(this)
+        alert_info_cell = new AlertDialog.Builder(this)
                 .setView(info_cell)
                 .setCancelable(false);
-
         txt_radio=(TextView) info_cell.findViewById(R.id.txt_radio);
         txt_mcc=(TextView) info_cell.findViewById(R.id.txt_mcc);
         txt_mnc=(TextView) info_cell.findViewById(R.id.txt_mnc);
@@ -287,12 +293,25 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         txt_lon=(TextView) info_cell.findViewById(R.id.txt_lon);
         txt_range=(TextView) info_cell.findViewById(R.id.txt_range);
         //txt_address=(TextView) info_cell.findViewById(R.id.txt_address);
-
-        img_close_info=(ImageView) info_cell.findViewById(R.id.img_close);
-        img_close_info.setOnClickListener(new View.OnClickListener() {
+        img_close_info_cell=(ImageView) info_cell.findViewById(R.id.img_close);
+        img_close_info_cell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                show.dismiss();
+                show_info_cell.dismiss();
+            }
+        });
+
+        View info_conn = LayoutInflater.from(this).inflate(R.layout.layout_volume_data,null);
+        alert_info_conn = new AlertDialog.Builder(this)
+                .setView(info_conn)
+                .setCancelable(true);
+        txt_volume_ul=(TextView) info_conn.findViewById(R.id.txtVolumeUl);
+        txt_volume_dl=(TextView) info_conn.findViewById(R.id.txtVolumeDl);
+        img_close_info_conn=(ImageView) info_conn.findViewById(R.id.img_close_info_conn);
+        img_close_info_conn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                show_info_conn.dismiss();
             }
         });
 
@@ -342,7 +361,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        //testDebit(35.8626285,10.5999459,169.2510821673623);
+       //testDebit(35.8626285,10.5999459,169.2510821673623);
 
     }
 
@@ -433,7 +452,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo == null ){
-            alert_wifi.dismiss();
+            /*alert_wifi.dismiss();
             Common.cpt_wifi=0;
             layout_signal.setVisibility(View.GONE);
             coordinator_layout_time.setVisibility(View.GONE);
@@ -456,7 +475,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     alert_no_conn.show();
                 }
             }
-
+*/
+            searchBestCell();
         }
         else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
             Common.cpt_wifi=0;
@@ -520,7 +540,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(15);
+        this.map.setMinZoomPreference(9);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -607,7 +627,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
         if(cptOnMapClick == 1){
-            //dialog.show();
+            dialog.show();
             Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
             end_lat = point.getLatitude();
             end_lon = point.getLongitude();
@@ -747,6 +767,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(predict -> {
                             if(predict.isSuccess()){
+                                testDebit(start_lat,start_lon,169.2510821673623);
                                 cardView_time.setVisibility(View.VISIBLE);
 
                                 double dist = Double.parseDouble(predict.getDistance());
@@ -755,8 +776,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                                 double time_sec = Double.parseDouble(predict.getResult());
                                 long time_min = TimeUnit.SECONDS.toMinutes((long) time_sec);
-
-                                testDebit(start_lat,start_lon,time_sec);
 
                                 if(time_sec < 60){
                                     txt_time_connectivite.setText(new StringBuilder(String.valueOf((long) time_sec)).append(" sec"));
@@ -775,7 +794,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         },
                         throwable -> {
                             dialog.dismiss();
-                            Toast.makeText(HomeActivity.this,"Faild to connect with server"+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(HomeActivity.this,R.string.errorServer,Toast.LENGTH_SHORT).show();
                         }
                 )
         );
@@ -1248,6 +1267,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         compositeDisposable.clear();
         handler.removeCallbacks(runnable);
+        Common.cpt_no_conn=0;
+        Common.cpt_wifi=0;
         if(listen){
             telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
         }
@@ -1260,16 +1281,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mapView.onLowMemory();
     }
 
-   private void testDebit(double lat_user,double lon_user, double timeConn) {
+    private void testDebit(double lat_user,double lon_user, double timeConn) {
+
         Log.d("getDebitLat", String.valueOf(lat_user));
         Log.d("getDebitLon", String.valueOf(lon_user));
+        Log.d("getDebitTime", String.valueOf(timeConn));
         getSpeedTestHostsHandler = new GetSpeedTestHostsHandler();
         getSpeedTestHostsHandler.run();
         new Thread(new Runnable() {
             public void run(){
 
                 //Get hosts
-                int timeCount = 60; //1min
+                int timeCount = 6; //1min
                 while (!getSpeedTestHostsHandler.isFinished()) {
                     timeCount--;
                     try {
@@ -1280,7 +1303,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Log.d("Error Host","No Connection...");
+                                Log.d("getDebitHost","No Connection...");
                             }
 
                         });
@@ -1313,7 +1336,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         findServerIndex = index;
                     }
                 }
-                Log.d("findServerIndex", String.valueOf(findServerIndex));
+                Log.d("getDebitfindServerIndex", String.valueOf(findServerIndex));
                 String testAddr = mapKey.get(findServerIndex).replace("http://", "https://");
                 final List<String> info = mapValue.get(findServerIndex);
                 final double distance = dist;
@@ -1322,7 +1345,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d("Error Host","There was a problem in getting Host Location. Try again later");
+                            Log.d("getDebitHost","There was a problem in getting Host Location. Try again later");
                         }
                     });
                     return;
@@ -1331,7 +1354,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("Host",String.format("Host Location: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
+                        Log.d("getDebitDist",String.format("Host Location: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
                     }
                 });
 
@@ -1359,21 +1382,23 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Upload Test
                     if (uploadTestFinished) {
-                            //Failure
-                            if (uploadTest.getFinalUploadRate() == 0) {
-                                Log.d("getDebitUL","Error Upload");
-                            } else {
-                                //Success
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Log.d("getDebitUL",dec.format(uploadTest.getFinalUploadRate()));//Mbps
-                                        Log.d("gettimeUL",dec.format(timeConn));//seconde
-                                        Log.d("getVolumeUL",dec.format(uploadTest.getFinalUploadRate() * timeConn));//Mbits
-                                    }
-                                });
-                            }
+                        //Failure
+                        if (uploadTest.getFinalUploadRate() == 0) {
+                            Log.d("getDebitUL","Error Upload");
+                            txt_volume_ul.setText("Error Upload");
+                        } else {
+                            //Success
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    txt_volume_ul.setText(dec.format((uploadTest.getFinalUploadRate() * timeConn)/1000.0)+" Gbits");
+                                    Log.d("getDebitUL",dec.format(uploadTest.getFinalUploadRate()));//Mbps
+                                    Log.d("gettimeUL",dec.format(timeConn));//seconde
+                                    Log.d("getVolumeUL",dec.format(uploadTest.getFinalUploadRate() * timeConn));//Gbits
+                                }
+                            });
                         }
+                    }
 
                     //Download Test
                     if (uploadTestFinished) {
@@ -1381,11 +1406,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             //Failure
                             if (downloadTest.getFinalDownloadRate() == 0) {
                                 Log.d("getDebitDL","Error Download");
+                                //txt_volume_dl.setText("Error Download");
                             } else {
                                 //Success
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        txt_volume_dl.setText(dec.format((downloadTest.getFinalDownloadRate() * timeConn)/1000.0)+" Gbits");
                                         Log.d("getDebitDL",dec.format(downloadTest.getFinalDownloadRate()));//Mbps
                                         Log.d("gettimeDL",dec.format(timeConn));//seconde
                                         Log.d("getVolumeDL",dec.format(downloadTest.getFinalDownloadRate() * timeConn));//Mbits
@@ -1411,7 +1438,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             Thread.sleep(300);
                         } catch (InterruptedException e) {
                         }
-                    } else {
+                    }
+                    else {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
@@ -1423,6 +1451,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }).start();
         Log.d("testDebit","finished");
     }
+
 }
 
 

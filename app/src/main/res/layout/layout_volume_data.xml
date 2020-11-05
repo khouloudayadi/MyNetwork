@@ -2,8 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="10dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
     android:backgroundTint="@android:color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
@@ -64,7 +64,7 @@
                             android:gravity="center_horizontal" />
                     </LinearLayout>
                     <TextView
-                        android:id="@+id/txtVolumeUl"
+                        android:id="@+id/txtVolumeDl"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="0 Mbits"
@@ -104,7 +104,7 @@
                             android:gravity="center_horizontal" />
                     </LinearLayout>
                     <TextView
-                        android:id="@+id/txtVolumeDl"
+                        android:id="@+id/txtVolumeUl"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="0 Mbits"

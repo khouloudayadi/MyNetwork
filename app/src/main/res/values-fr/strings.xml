@@ -67,7 +67,7 @@
     <string name="range">Portée :</string>
     <string name="cellid">Cellule ID (CID) :</string>
     <string name="area">Code région :</string>
-    <string name="errorServer">Erreur de connexion au serveur. Veuillez réessayer</string>
+    <string name="errorServer">Échec de la connexion au serveur. Veuillez réessayer</string>
     <string name="address">Adresse</string>
     <string name="alert_best_antenne">"Soyez vigilant à votre environnement lorsque vous vous déplacer vers l'antenne la plus proche."</string>
 </resources>

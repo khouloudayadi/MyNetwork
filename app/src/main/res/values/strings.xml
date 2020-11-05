@@ -72,7 +72,7 @@
     <string name="txt_unknown_network">Unknown network</string>
     <string name="wating_location">Waiting for get location ...</string>
     //Toast
-    <string name="errorServer">Error connecting to server. please try again</string>
+    <string name="errorServer">Faild to connect with server. please try again</string>
     //mapbox
     <string name="access_token" translatable="false">pk.eyJ1IjoiYXlhZGlraG91bG91ZCIsImEiOiJja2Q1dWthM3cwNGJpMnBzYzZpNnRqc2t4In0.Lmj_vPp5beqQhKW-2ktX0w</string>
     <string name="tts">you have %s and %s kilometer</string>
