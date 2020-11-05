@@ -24,6 +24,8 @@
     <string name="desc_signal_good">Signal fort avec de bonnes vitesses de données</string>
     <string name="desc_signal_fair">Des vitesses de données justes mais utiles, rapides et fiables peuvent être atteintes, mais des données marginales avec des abandons sont possibles</string>
     <string name="desc_signal_poor">Les performances chuteront considérablement</string>
+    <string name="Volume_data">Le volume de données théorique possible, que vous pouvez exploiter :</string>
+    <!--vous avez un volume de donnees possible d'exploiter :-->
 
     <string name="find_cell">Trouver l\'antenne la plus proche</string>
     <string name="hote_pb">Il y avait un problème pour obtenir l\'emplacement de l\'hôte</string>

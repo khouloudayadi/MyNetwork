@@ -85,5 +85,7 @@
     <string name="address">Address</string>
     <string name="alert_best_antenne">"Be aware of your surroundings when moving to the nearest antenna."</string>
     <string name="range">Range :</string>
+    <string name="Volume_data">Le volume de données théorique possible, que vous pouvez exploiter :</string>
+    <!--vous avez un volume de donnees possible d'exploiter :-->
 
 </resources>

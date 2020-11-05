@@ -1,9 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp"
+    android:backgroundTint="@android:color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="9"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_marginTop="6dp"
+            android:padding="5dp"
+            android:layout_weight="9"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:text="@string/Volume_data"
+                android:layout_marginLeft="3dp"
+                android:textSize="16sp"
+                android:textStyle="normal" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="10"
+                android:layout_margin="7dp"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:layout_weight="5"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
 
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:tint="@android:color/black"
+                            android:src="@drawable/ic_download_24dp" />
 
-</LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="DOWNLOAD"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="15sp"
+                            android:layout_marginLeft="4dp"
+                            android:textStyle="bold"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtVolumeUl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0 Mbits"
+                        android:layout_marginLeft="10dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="13sp"
+                        android:gravity="center_horizontal" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:layout_weight="5"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            app:tint="@android:color/black"
+                            android:src="@drawable/ic_upload_24dp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="UPLOAD"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/black"
+                            android:textSize="15sp"
+                            android:layout_marginLeft="4dp"
+                            android:textStyle="bold"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtVolumeDl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0 Mbits"
+                        android:layout_marginLeft="10dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="13sp"
+                        android:gravity="center_horizontal" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/img_close_info_conn"
+            android:padding="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_close" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

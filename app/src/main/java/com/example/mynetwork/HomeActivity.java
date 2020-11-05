@@ -61,7 +61,6 @@ import com.example.mynetwork.Retrofit.RetrofitClient;
 import com.example.mynetwork.TestDebit.GetSpeedTestHostsHandler;
 import com.example.mynetwork.TestDebit.HttpDownloadTest;
 import com.example.mynetwork.TestDebit.HttpUploadTest;
-import com.example.mynetwork.TestDebit.PingTest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonObject;
@@ -521,7 +520,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(8);
+        this.map.setMinZoomPreference(15);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -608,7 +607,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
         if(cptOnMapClick == 1){
-            dialog.show();
+            //dialog.show();
             Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
             end_lat = point.getLatitude();
             end_lon = point.getLongitude();
@@ -756,6 +755,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                                 double time_sec = Double.parseDouble(predict.getResult());
                                 long time_min = TimeUnit.SECONDS.toMinutes((long) time_sec);
+
+                                testDebit(start_lat,start_lon,time_sec);
 
                                 if(time_sec < 60){
                                     txt_time_connectivite.setText(new StringBuilder(String.valueOf((long) time_sec)).append(" sec"));
@@ -1259,8 +1260,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         mapView.onLowMemory();
     }
 
-
    private void testDebit(double lat_user,double lon_user, double timeConn) {
+        Log.d("getDebitLat", String.valueOf(lat_user));
+        Log.d("getDebitLon", String.valueOf(lon_user));
         getSpeedTestHostsHandler = new GetSpeedTestHostsHandler();
         getSpeedTestHostsHandler.run();
         new Thread(new Runnable() {
@@ -1366,6 +1368,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                     @Override
                                     public void run() {
                                         Log.d("getDebitUL",dec.format(uploadTest.getFinalUploadRate()));//Mbps
+                                        Log.d("gettimeUL",dec.format(timeConn));//seconde
                                         Log.d("getVolumeUL",dec.format(uploadTest.getFinalUploadRate() * timeConn));//Mbits
                                     }
                                 });
@@ -1384,6 +1387,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                     @Override
                                     public void run() {
                                         Log.d("getDebitDL",dec.format(downloadTest.getFinalDownloadRate()));//Mbps
+                                        Log.d("gettimeDL",dec.format(timeConn));//seconde
                                         Log.d("getVolumeDL",dec.format(downloadTest.getFinalDownloadRate() * timeConn));//Mbits
                                     }
                                 });
