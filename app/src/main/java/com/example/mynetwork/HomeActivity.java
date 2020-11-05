@@ -790,7 +790,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 dialog.dismiss();
                                 Toast.makeText(HomeActivity.this,predict.getMessage(),Toast.LENGTH_SHORT).show();
                             }
-                            dialog.dismiss();
+                            //dialog.dismiss();
                         },
                         throwable -> {
                             dialog.dismiss();
@@ -1424,6 +1424,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Test terminé
                     if (downloadTestFinished && uploadTest.isFinished()) {
+                        dialog.dismiss();
                         break;
                     }
 
