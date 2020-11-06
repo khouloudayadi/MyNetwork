@@ -540,7 +540,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(9);
+        this.map.setMinZoomPreference(15);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -767,14 +767,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(predict -> {
                             if(predict.isSuccess()){
-                                testDebit(start_lat,start_lon,169.2510821673623);
+                                double time_sec = Double.parseDouble(predict.getResult());
+                                testDebit(start_lat,start_lon,time_sec);
                                 cardView_time.setVisibility(View.VISIBLE);
 
                                 double dist = Double.parseDouble(predict.getDistance());
-                                txt_distance_connectivite.setText(String.format(" %s km", new DecimalFormat("#.##").format(dist / 1000)));
+                                txt_distance_connectivite.setText(String.format("( %s km )", new DecimalFormat("#.##").format(dist / 1000)));
                                 txt_distance = String.valueOf(new DecimalFormat("#.##").format(dist / 1000));//KM
 
-                                double time_sec = Double.parseDouble(predict.getResult());
+
                                 long time_min = TimeUnit.SECONDS.toMinutes((long) time_sec);
 
                                 if(time_sec < 60){
@@ -790,7 +791,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                 dialog.dismiss();
                                 Toast.makeText(HomeActivity.this,predict.getMessage(),Toast.LENGTH_SHORT).show();
                             }
-                            //dialog.dismiss();
+                            dialog.dismiss();
                         },
                         throwable -> {
                             dialog.dismiss();
@@ -1424,7 +1425,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Test terminé
                     if (downloadTestFinished && uploadTest.isFinished()) {
-                        dialog.dismiss();
+                        //dialog.dismiss();
                         break;
                     }
 
