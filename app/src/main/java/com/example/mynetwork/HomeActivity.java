@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -227,7 +228,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     @OnClick(R.id.fab_info_cell)
     void fab_info_cell() {
-        show_info_cell = alert_info_cell.show();
+            show_info_cell = alert_info_cell.show();
     }
 
     @OnClick(R.id.img_detail)
@@ -284,6 +285,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         alert_info_cell = new AlertDialog.Builder(this)
                 .setView(info_cell)
                 .setCancelable(false);
+
         txt_radio=(TextView) info_cell.findViewById(R.id.txt_radio);
         txt_mcc=(TextView) info_cell.findViewById(R.id.txt_mcc);
         txt_mnc=(TextView) info_cell.findViewById(R.id.txt_mnc);
@@ -349,7 +351,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 if (!img_speech_tag) {
                     img_speech_tag = true;
                     //String Txt_speech = String.format("il vous reste %s et  %s kilometre pour entrer dans une zone non couverte",txt_temps,txt_distance);
-                    String Txt_speech = String.format("il vous reste %s et %s kilometre", txt_temps, txt_distance);
+                    String Txt_speech = String.format(getResources().getString(R.string.tts), txt_temps, txt_distance);
                     Log.d("txt", Txt_speech);
                     img_speech.setImageResource(R.drawable.ic_speech_up_24);
                     TTS.speak(Txt_speech, TextToSpeech.QUEUE_FLUSH, null);
@@ -418,10 +420,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (id == R.id.nav_test_debit) {
             startActivity(new Intent(HomeActivity.this,testDebitActivity.class) );
-        } else if (id == R.id.nav_share) {
+        }
+        else if (id == R.id.nav_share) {
             share();
-        } else if (id == R.id.nav_apropos) {
+        }
+        else if (id == R.id.nav_apropos) {
             apropos();
+        }
+        else if (id == R.id.nav_carte_couverture) {
+            startActivity(new Intent(HomeActivity.this,mapCoverageActivity.class) );
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -1199,29 +1206,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         txt_lat.setText(String.valueOf(bestCell.getLat()));
                         txt_lon.setText(String.valueOf(bestCell.getLon()));
                         txt_range.setText(String.valueOf(bestCell.getRange())+ " mètre");
-                        /*MapboxGeocoding client = MapboxGeocoding.builder()
-                                .accessToken(getString(R.string.access_token))
-                                .query(Point.fromLngLat(bestCell.getLon(),bestCell.getLat()))
-                                .geocodingTypes(GeocodingCriteria.TYPE_PLACE)
-                                .build();
-                        client.enqueueCall(new Callback<GeocodingResponse>() {
-                            @Override
-                            public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-                                if (response.body() != null) {
-                                    List<CarmenFeature> results = response.body().features();
-                                    if (results.size() > 0) {
-                                        CarmenFeature feature = results.get(0);
-                                        Log.d("addressssss",feature.placeName());
-                                        txt_address.setText(feature.placeName());
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-                                Log.d("address", t.getMessage());
-                            }
-                        });*/
 
                     }
                 },throwable -> { Log.i("searchcell",throwable.getMessage());})
@@ -1244,7 +1228,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onPause() {
-       TTS.stop();
+        TTS.stop();
         mapView.onPause();
         super.onPause();
     }

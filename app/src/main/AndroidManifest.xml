@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".mapCoverageActivity"></activity>
         <activity android:name=".testDebitActivity" />
         <activity
             android:name=".HomeActivity"

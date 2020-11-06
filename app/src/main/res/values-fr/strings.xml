@@ -6,14 +6,8 @@
     <string name="carte_couverture">Carte de Couverture</string>
     <string name="apropos">À propos</string>
     <string name="share">Partager</string>
-    <string name="liste_qualit_usage">Liste de la qualité des usages</string>
-    <string name="appel">Appels, SMS</string>
-    <string name="navigation_web">Navigation Web</string>
-    <string name="email">Tchat, Emails sans Pièce Jointe</string>
-    <string name="appels_video">Appels Vidéo(streaming HD)</string>
-    <string name="musique">Musique en Ligne</string>
-    <string name="email_piece">MMS, Emails avec Pièce Jointe</string>
-    <string name="jeux">Services de Jeux</string>
+
+
     <string name="no_signal">Pas de signal</string>
     <string name="desc_no_signal">Coupure du signal</string>
     <string name="signal_strength_excellent">Force du Signal Excellent</string>
@@ -25,7 +19,7 @@
     <string name="desc_signal_fair">Des vitesses de données justes mais utiles, rapides et fiables peuvent être atteintes, mais des données marginales avec des abandons sont possibles</string>
     <string name="desc_signal_poor">Les performances chuteront considérablement</string>
     <string name="Volume_data">Le volume de données théorique possible, que vous pouvez exploiter :</string>
-    <!--vous avez un volume de donnees possible d'exploiter :-->
+
 
     <string name="find_cell">Trouver l\'antenne la plus proche</string>
     <string name="hote_pb">Il y avait un problème pour obtenir l\'emplacement de l\'hôte</string>
@@ -55,7 +49,7 @@
     <string name="Permission_Denied">Permission refusée</string>
     <string name="cancel_alert">Annuler</string>
     <string name="permission_title">L\'autorisation d\'accéder à l\'emplacement de l\'appareil est définitivement refusée. vous devez accéder au paramètre pour autoriser l\'autorisation.</string>
-    <string name="tts">il vous reste %s et %s kilometer</string>
+    <string name="tts">Il vous reste %s et %s kilometer</string>
     <string name="wating_location">En attente de la localisation ...</string>
     <string name="ping">Temps de réponse</string>
     <string name="dowload">Descendant</string>
@@ -69,5 +63,6 @@
     <string name="area">Code région :</string>
     <string name="errorServer">Échec de la connexion au serveur. Veuillez réessayer</string>
     <string name="address">Adresse</string>
+    <string name="dispo_conn">Disponibilité de la connexion réseau</string>
     <string name="alert_best_antenne">"Soyez vigilant à votre environnement lorsque vous vous déplacer vers l'antenne la plus proche."</string>
 </resources>

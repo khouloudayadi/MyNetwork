@@ -221,7 +221,7 @@
                                 android:layout_gravity="center_horizontal"
                                 android:layout_margin="5dp"
                                 android:textColor="@android:color/black"
-                                android:text="Disponibilité de la connexion réseau"
+                                android:text="@string/dispo_conn"
                                 android:textSize="17sp"
                                 android:fontFamily="sans-serif-black"
                                 android:textStyle="bold" />
