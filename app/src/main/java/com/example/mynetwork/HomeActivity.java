@@ -152,6 +152,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     AlertDialog.Builder alert_info_cell;
     AlertDialog.Builder alert_info_conn;
     AlertDialog show_info_cell;
+
     AlertDialog show_info_conn;
     //mapBox
     private MapboxMap map;
@@ -179,7 +180,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private INetworkAPI myNetworkAPI;
     //Variable
-    private int rssi;
+    private int rssi,rsrp,rsrq;
     private double start_lat, start_lon, end_lat, end_lon, vitesse;
     private String network, timeStamp, carrierName;
     private int cid, mcc, mnc, area, range;
@@ -226,14 +227,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    @OnClick(R.id.fab_info_cell)
-    void fab_info_cell() {
-            show_info_cell = alert_info_cell.show();
-    }
-
     @OnClick(R.id.img_detail)
     void get_info_conn() {
         show_info_conn = alert_info_conn.show();
+    }
+
+    @OnClick(R.id.fab_info_cell)
+    void get_info_cell() {
+        show_info_cell = alert_info_conn.show();
     }
 
     @OnClick(R.id.img_drop_down)
@@ -254,6 +255,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         searchLocation();
     }
 
+    @SuppressLint("NewApi")
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,8 +282,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         init();
         initView();
         checkNetwork();
-
-        View info_cell = LayoutInflater.from(this).inflate(R.layout.layout_info_cell,null);
+        View info_cell = getLayoutInflater().inflate(R.layout.layout_info_cell,null);
         alert_info_cell = new AlertDialog.Builder(this)
                 .setView(info_cell)
                 .setCancelable(false);
@@ -943,6 +944,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     area = cellIdentityWcdma.getLac();
                     mcc = cellIdentityWcdma.getMcc();
                     mnc = cellIdentityWcdma.getMnc();
+
                     if (cellInfoWcdma.getCellSignalStrength() != null) {
                         rssi=cellInfoWcdma.getCellSignalStrength().getDbm();//Get the signal strength as dBm
                     }
@@ -959,6 +961,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     if (cellInfoLte.getCellSignalStrength() != null) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             rssi=cellInfoLte.getCellSignalStrength().getRssi();
+                            rsrp=cellInfoLte.getCellSignalStrength().getRsrp();
+                            rsrq=cellInfoLte.getCellSignalStrength().getRsrq();
                         }
                     }
                 }
@@ -980,12 +984,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     Log.e("TAG", "CDMA CellInfo");
                 }
             }
-            showSignal(rssi,radio);
+            showSignal(rssi,radio,rsrp,rsrq);
             addCellTower(radio,mcc,mnc,cid,area);
         }
     }
 
-    public void showSignal(int rssi,String radio){
+    public void showSignal(int rssi,String radio,int rsrp,int rsrq){
         if(radio.equals("GSM") || radio.equals("UMTS")){
             if(rssi >= -70){
                 layout_signal.setBackgroundResource(R.color.signal_excellent);
@@ -1014,17 +1018,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         else if(radio.equals("LTE")){
-            if(rssi > -65){
+            if((rssi > -65)||(rsrp >= -80) || (rsrq >= -10)){
                 layout_signal.setBackgroundResource(R.color.signal_excellent);
                 txt_signal.setText(R.string.signal_strength_excellent);
                 txt_descr_signal.setText(R.string.desc_signal_excellent);
             }
-            else if((rssi > -75) && (rssi <= -65)){
+            else if(((rssi > -75) && (rssi <= -65))||((rsrp < -80) && (rsrp > -90))||((rsrq < -10) && (rsrq > -15))){
                 layout_signal.setBackgroundResource(R.color.signal_good);
                 txt_signal.setText(R.string.signal_strength_good);
                 txt_descr_signal.setText(R.string.desc_signal_good);
             }
-            else if((rssi > -85) && (rssi <= -75)){
+            else if(((rssi > -85) && (rssi <= -75))||((rsrq <= -15) && (rsrq > -20))||((rsrp <= -90) && (rsrp > -100))){
                 layout_signal.setBackgroundResource(R.color.signal_fair);
                 txt_signal.setText(R.string.signal_strength_fair);
                 txt_descr_signal.setText(R.string.desc_signal_fair);
@@ -1034,7 +1038,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 txt_signal.setText(R.string.signal_strength_poor);
                 txt_descr_signal.setText(R.string.desc_signal_poor);
             }
-            else if(rssi <= -95){
+            else if((rssi <= -95)||(rsrq <= -20)||(rsrp <= -100)){
                 layout_signal.setBackgroundResource(R.color.no_signal);
                 txt_signal.setText(R.string.no_signal);
                 txt_descr_signal.setText(R.string.no_signal);

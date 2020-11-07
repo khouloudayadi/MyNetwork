@@ -30,7 +30,7 @@
     <string name="Sub_type">Sous-type de réseau :</string>
     <string name="non_connecte">Non Connecté à internet</string>
     <string name="connecetd_wifi">Connecté par Wi-Fi</string>
-    <string name="error_connection">Pas de connexion ...</string>
+    <string name="error_connection">Pas de Connexion Internet...</string>
     <string name="check_connection">Vérifiez votre Connexion internet !</string>
     <string name="user_location_permission_explanation">Cette application a besoin d\'autorisations de localisation pour afficher ses fonctionnalités</string>
     <string name="user_location_permission_not_granted">Vous n\'avez pas accordé les autorisations de localisation</string>
@@ -55,7 +55,7 @@
     <string name="dowload">Descendant</string>
     <string name="upload">Montant</string>
     <string name="distance_to_cell">Distance de L\'antenne :</string>
-    <string name="network_type">Type de réseau : </string>
+    <string name="network_type">Type de réseau :</string>
     <string name="mobile_country_code">Code de pays mobile (MCC) :</string>
     <string name="mobile_network_code">Code de réseau mobile (MNC) :</string>
     <string name="range">Portée :</string>
@@ -64,5 +64,9 @@
     <string name="errorServer">Échec de la connexion au serveur. Veuillez réessayer</string>
     <string name="address">Adresse</string>
     <string name="dispo_conn">Disponibilité de la connexion réseau</string>
+    <string name="search">Chercher</string>
+    <string name="myLocation">Ma position</string>
+    <string name="coverage_date">Couverture Juin 2019</string>
+    <string name="error_map_coverage">Without internet connection, the app cannot display the coverage map.</string>
     <string name="alert_best_antenne">"Soyez vigilant à votre environnement lorsque vous vous déplacer vers l'antenne la plus proche."</string>
 </resources>

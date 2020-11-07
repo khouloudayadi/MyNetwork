@@ -77,6 +77,10 @@
     <string name="range">Range :</string>
     <string name="Volume_data">The theoretical possible data volume, which you can use:</string>
     <string name="dispo_conn">Availability of network connection</string>
+    <string name="search">Search</string>
+    <string name="myLocation">My Location</string>
+    <string name="coverage_date">Coverage June 2019</string>
+    <string name="error_map_coverage">Without internet connection, the app cannot display the coverage map.</string>
     <!--vous avez un volume de donnees possible d'exploiter :-->
 
 </resources>

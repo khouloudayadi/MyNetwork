@@ -143,7 +143,6 @@
             app:mapbox_cameraTargetLat="35.9980277"
             app:mapbox_cameraTargetLng="10.3921591"
             app:mapbox_cameraZoom="8"/>
-
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
