@@ -84,5 +84,6 @@
     <string name="error_map_coverage">Without internet connection, the app cannot display the coverage map.</string>
     <!--vous avez un volume de donnees possible d'exploiter :-->
     <string name="new_location">New lat: %1$s New longitude: %2$s</string>
+    <string name="error_adresse">Please enter a valid address</string>
 
 </resources>

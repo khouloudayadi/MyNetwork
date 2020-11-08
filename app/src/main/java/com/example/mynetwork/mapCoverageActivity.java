@@ -11,12 +11,16 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,6 +68,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -244,9 +249,15 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
     }
 
     private void startSearchPlace(String query_name_place) {
-        //Toast.makeText(mapCoverageActivity.this,"[search place]"+query_name_place,Toast.LENGTH_SHORT).show();
         //getcarteCouverture(lat,lon);
-    }
+        if (TextUtils.isEmpty(query_name_place)) {
+            Toast.makeText(mapCoverageActivity.this,R.string.error_adresse,Toast.LENGTH_SHORT).show();
+        }
+        else{
+            getAddressFromLocation(query_name_place, getApplicationContext());
+        }
+
+        }
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
@@ -262,14 +273,11 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         });
     }
 
-
     private void getcarteCouverture(){
         //Log.d("lat2", String.valueOf(locationComponent.getLastKnownLocation().getLatitude()));
         if(compositeDisposable != null){
             compositeDisposable.clear();
         }
-
-
         Location LocationUser = new Location("LocationUser");
         LocationUser.setLatitude(lat);
         LocationUser.setLongitude(lon);
@@ -307,17 +315,17 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                                     if (cellsCoverage.get(i).getRadio().equals("GSM")) {
                                         map.addMarker(new MarkerOptions()
                                                 .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                .title(cellsCoverage.get(i).getRadio())
+                                                .title("GSM")
                                                 .icon(iconGSM));
                                     } else if (cellsCoverage.get(i).getRadio().equals("UMTS")) {
                                         map.addMarker(new MarkerOptions()
                                                 .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                .title(cellsCoverage.get(i).getRadio())
+                                                .title("UMTS")
                                                 .icon(iconUMTS));
                                     } else {
                                         map.addMarker(new MarkerOptions()
                                                 .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                .title(cellsCoverage.get(i).getRadio())
+                                                .title("LTE")
                                                 .icon(iconLTE));
                                     }
                                     i++;
@@ -444,6 +452,29 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                         Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void getAddressFromLocation(final String locationAddress, final Context context) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                String result = null;
+                try {
+                    List addressList = geocoder.getFromLocationName(locationAddress, 1);
+                    if (addressList != null && addressList.size() > 0) {
+                        Address address = (Address) addressList.get(0);
+                        StringBuilder sb = new StringBuilder();
+                        lat=address.getLatitude();
+                        lon=address.getLongitude();
+                        getcarteCouverture();
+                    }
+                } catch (IOException e) {
+                    Log.e("error_geocode", "Unable to connect to Geocoder", e);
+                }
+            }
+        };
+        thread.start();
     }
 
     @Override
