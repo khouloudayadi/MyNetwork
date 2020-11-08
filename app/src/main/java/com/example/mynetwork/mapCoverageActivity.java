@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
@@ -47,6 +48,7 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.localization.LocalizationPlugin;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -64,7 +66,7 @@ import io.reactivex.schedulers.Schedulers;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 
 
-public class mapCoverageActivity extends AppCompatActivity implements PermissionsListener {
+public class mapCoverageActivity extends AppCompatActivity implements PermissionsListener, OnMapReadyCallback {
     private PermissionsManager permissionsManager;
     private LocationComponent locationComponent;
     private MapboxMap map;
@@ -83,6 +85,7 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.progressBar) ProgressBar progressBar;
     @BindView(R.id.layout_sans_conx) LinearLayout layout_sans_conx;
+    @BindView(R.id.card_legend) CardView card_legend;
 
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
@@ -93,24 +96,13 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         initView();
-
         checkConnexion();
 
+        //mapview
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull MapboxMap mapboxMap) {
-                map = mapboxMap;
-                mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        // mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/mapbox/cj3kbeqzo00022smj7akz3o1e"));
-                        //enableLocationComponent(style);
-                    }
-                });
-            }
-        });
+        mapView.getMapAsync(this);
+
     }
 
     private void checkConnexion() {
@@ -118,6 +110,7 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo == null ) {
             progressBar.setVisibility(View.GONE);
+            card_legend.setVisibility(View.GONE);
             layout_sans_conx.setVisibility(View.VISIBLE);
         }
         else {
@@ -132,6 +125,7 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                     layout_sans_conx.setVisibility(View.GONE);
                 } else {
                     progressBar.setVisibility(View.GONE);
+                    card_legend.setVisibility(View.GONE);
                     layout_sans_conx.setVisibility(View.VISIBLE);
                 }
             } catch (MalformedURLException e) {
@@ -142,6 +136,7 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         }
         refresh(1000);
     }
+
     public void refresh(int milliseconds){
         handler = new Handler();
         runnable = new Runnable() {
@@ -227,6 +222,20 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         });
         return true;
     }
+
+    @Override
+    public void onMapReady(@NonNull MapboxMap mapboxMap) {
+        map = mapboxMap;
+        this.map.setMinZoomPreference(14);
+        map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+                enableLocationComponent(style);
+                //Log.d("ya rabi", String.valueOf(locationComponent.getLastKnownLocation().getLatitude()));
+            }
+        });
+    }
+
     @SuppressLint("MissingPermission")
     private void enableLocationComponent(Style style) {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
@@ -246,11 +255,14 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
 
     private void startSearchPlace(String query_name_place) {
         Toast.makeText(mapCoverageActivity.this,"[search place]"+query_name_place,Toast.LENGTH_SHORT).show();
-        getcarteCouverture(35.8626484,10.6000108);
+        getcarteCouverture(locationComponent.getLastKnownLocation().getLatitude(),locationComponent.getLastKnownLocation().getLongitude());
     }
 
     private void getcarteCouverture(double lat,double lon){
-//Log.d("lat2", String.valueOf(locationComponent.getLastKnownLocation().getLatitude()));
+        //Log.d("lat2", String.valueOf(locationComponent.getLastKnownLocation().getLatitude()));
+        if(compositeDisposable != null){
+            compositeDisposable.clear();
+        }
         Location LocationUser = new Location("LocationUser");
         LocationUser.setLatitude(lat);
         LocationUser.setLongitude(lon);
@@ -273,23 +285,39 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                                 //System.out.println(cellsCoverage.toString());
                                 map.animateCamera(CameraUpdateFactory.newCameraPosition(
                                         new CameraPosition.Builder()
-                                                .target(new LatLng(35.862231, 10.599579))
+                                                .target(new LatLng(lat, lon))
                                                 .zoom(14)
                                                 .build()));
 
                                 // Create an Icon object for the marker to use
                                 IconFactory iconFactory = IconFactory.getInstance(mapCoverageActivity.this);
-                                Icon icon = iconFactory.fromResource(R.drawable.mapbox_marker_icon_default);
+                                Icon iconGSM = iconFactory.fromResource(R.drawable.icongsm);
+                                Icon iconUMTS = iconFactory.fromResource(R.drawable.iconumts);
+                                Icon iconLTE = iconFactory.fromResource(R.drawable.iconlte);
                                 int i = 0;
-                                while (i < 8000) {
+                                while (i < 15577) {
                                     System.out.println(cellsCoverage.get(i).toString());
-                                    map.addMarker(new MarkerOptions()
-                                            .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                            .title(cellsCoverage.get(i).getRadio())
-                                            .icon(icon));
+                                    if(cellsCoverage.get(i).getRadio().equals("GSM")) {
+                                        map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                .title(cellsCoverage.get(i).getRadio())
+                                                .icon(iconGSM));
+                                    }
+                                    else if(cellsCoverage.get(i).getRadio().equals("UMTS")) {
+                                        map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                .title(cellsCoverage.get(i).getRadio())
+                                                .icon(iconUMTS));
+                                    }
+                                    else {
+                                        map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                .title(cellsCoverage.get(i).getRadio())
+                                                .icon(iconLTE));
+                                    }
                                     i++;
                                 }
-
+                                card_legend.setVisibility(View.VISIBLE);
                             } else {
                                 Log.d("getCellDB", cellModel.getMessage());
                             }

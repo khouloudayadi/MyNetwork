@@ -548,7 +548,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(15);
+        this.map.setMinZoomPreference(14);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -677,7 +677,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             map.animateCamera(CameraUpdateFactory.newCameraPosition(
                                     new CameraPosition.Builder()
                                             .target(new LatLng(point.latitude(), point.longitude()))
-                                            .zoom(10)
+                                            .zoom(14)
                                             .build()));
 
                             // Create an Icon object for the marker to use
@@ -777,7 +777,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             if(predict.isSuccess()){
                                 double time_sec = Double.parseDouble(predict.getResult());
                                 testDebit(start_lat,start_lon,time_sec);
-                                cardView_time.setVisibility(View.VISIBLE);
+                                //cardView_time.setVisibility(View.VISIBLE);
 
                                 double dist = Double.parseDouble(predict.getDistance());
                                 txt_distance_connectivite.setText(String.format("( %s km )", new DecimalFormat("#.##").format(dist / 1000)));
@@ -1413,6 +1413,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Test terminé
                     if (downloadTestFinished && uploadTest.isFinished()) {
+                        cardView_time.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                         break;
                     }

@@ -6,7 +6,7 @@
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     //menu navigation
     <string name="communicate">Communicate</string>
-    <string name="tester_debit">Test The Rate</string>
+    <string name="tester_debit">Speed Test</string>
     <string name="network">My Network</string>
     <string name="carte_couverture">Coverage Map</string>
     <string name="apropos">About</string>
@@ -44,7 +44,7 @@
 
     //btn
     <string name="btn_test">Start Test</string>
-    <string name="btn_redémarrer_le_test">Restart the test</string>
+    <string name="btn_redémarrer_le_test">Restart the Test</string>
     <string name="ok">Activate Location</string>
     <string name="title_alert_gps">No access to position</string>
     <string name="close">Close</string>
@@ -80,6 +80,7 @@
     <string name="search">Search</string>
     <string name="myLocation">My Location</string>
     <string name="coverage_date">Coverage June 2019</string>
+    <string name="error_test_debit">Without an internet connection, the app cannot perform a speed test.</string>
     <string name="error_map_coverage">Without internet connection, the app cannot display the coverage map.</string>
     <!--vous avez un volume de donnees possible d'exploiter :-->
 

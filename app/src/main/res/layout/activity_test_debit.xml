@@ -19,190 +19,203 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
-    <LinearLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:visibility="visible"
+        android:layout_marginTop="2dp"
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:padding="10dp"
-            android:layout_gravity="top"
-            android:orientation="horizontal"
-            android:weightSum="3">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_bing_24dp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="PING"
-                        android:layout_marginLeft="4dp"
-                        android:textAlignment="center"
-                        android:textColor="@android:color/holo_blue_dark"
-                        android:textSize="13.5sp"
-                        android:textStyle="normal|bold"
-                        android:gravity="center_horizontal" />
-                </LinearLayout>
-                <TextView
-                    android:id="@+id/txt_ping"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="0 ms"
-                    android:layout_marginLeft="10dp"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/black"
-                    android:textSize="13sp"
-                    android:gravity="center_horizontal" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_download_24dp" />
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="DOWNLOAD"
-                        android:textAlignment="center"
-                        android:textColor="@android:color/holo_blue_dark"
-                        android:textSize="13.5sp"
-                        android:layout_marginLeft="4dp"
-                        android:textStyle="normal|bold"
-                        android:gravity="center_horizontal" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/downloadTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="0 Mbps"
-                    android:layout_marginLeft="10dp"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/black"
-                    android:textSize="13sp"
-                    android:gravity="center_horizontal" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_upload_24dp" />
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
-                        android:text="UPLOAD"
-                        android:textAlignment="center"
-                        android:textColor="@android:color/holo_blue_dark"
-                        android:textSize="13.5sp"
-                        android:textStyle="normal|bold"
-                        android:gravity="center_horizontal" />
-                </LinearLayout>
-                <TextView
-                    android:id="@+id/uploadTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="0 Mbps"
-                    android:layout_marginLeft="10dp"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/black"
-                    android:textSize="13sp"
-                    android:gravity="center_horizontal" />
-            </LinearLayout>
-        </LinearLayout>
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="50dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/gaugeview6" />
-
-            <ImageView
-                android:id="@+id/barImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                app:srcCompat="@drawable/bar6" />
-        </RelativeLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:padding="8dp"
-            android:orientation="vertical"
-            android:layout_gravity="bottom">
-            <Button
-                android:id="@+id/startButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@android:color/transparent"
-                android:text="@string/btn_test"
-                android:textAllCaps="false"
-                android:textColor="@android:color/black"
-                android:textSize="17sp"
-                android:textStyle="normal" />
+                android:baselineAligned="false"
+                android:padding="10dp"
+                android:layout_gravity="top"
+                android:orientation="horizontal"
+                android:weightSum="3">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_bing_24dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PING"
+                            android:layout_marginLeft="4dp"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/holo_blue_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="normal|bold"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txt_ping"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0 ms"
+                        android:layout_marginLeft="10dp"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/black"
+                        android:textSize="13sp"
+                        android:gravity="center_horizontal" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_download_24dp" />
+
+                        <TextView
+                            android:id="@+id/textView2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="DOWNLOAD"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/holo_blue_dark"
+                            android:textSize="13.5sp"
+                            android:layout_marginLeft="4dp"
+                            android:textStyle="normal|bold"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/downloadTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0 Mbps"
+                        android:layout_marginLeft="10dp"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/black"
+                        android:textSize="13sp"
+                        android:gravity="center_horizontal" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/ic_upload_24dp" />
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="4dp"
+                            android:text="UPLOAD"
+                            android:textAlignment="center"
+                            android:textColor="@android:color/holo_blue_dark"
+                            android:textSize="13.5sp"
+                            android:textStyle="normal|bold"
+                            android:gravity="center_horizontal" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/uploadTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="0 Mbps"
+                        android:layout_marginLeft="10dp"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/black"
+                        android:textSize="13sp"
+                        android:gravity="center_horizontal" />
+                </LinearLayout>
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="50dp"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/gaugeview6" />
+
+                <ImageView
+                    android:id="@+id/barImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    app:srcCompat="@drawable/bar6" />
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:padding="8dp"
+                android:orientation="vertical"
+                android:layout_gravity="bottom">
+                <Button
+                    android:id="@+id/startButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="@android:color/transparent"
+                    android:text="@string/btn_test"
+                    android:textAllCaps="false"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="normal" />
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="@color/backgroung_icon_rx"
+            android:layout_gravity="bottom"
+            android:visibility="visible"
+            android:id="@+id/layout_sans_conx_test"
+            android:layout_height="wrap_content">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/txt_state"
-                android:visibility="gone"
-                android:layout_gravity="center_horizontal"
-                android:text="ping en cours ..."
-                android:fontFamily="sans-serif-condensed-light"
-                android:textSize="10sp" />
+                android:textColor="@android:color/white"
+                android:text="@string/error_test_debit"
+                android:textSize="16sp"
+                android:layout_margin="8dp"
+                android:fontFamily="sans-serif-condensed-light" />
         </LinearLayout>
-
-    </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </LinearLayout>

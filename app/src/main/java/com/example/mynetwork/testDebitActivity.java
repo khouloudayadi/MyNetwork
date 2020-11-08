@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.provider.Settings;
@@ -21,9 +22,12 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -54,6 +58,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import dmax.dialog.SpotsDialog;
 
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static java.lang.Thread.sleep;
 
 public class testDebitActivity extends AppCompatActivity {
@@ -75,9 +80,12 @@ public class testDebitActivity extends AppCompatActivity {
     ConnectivityManager connectivityManager;
 
     android.app.AlertDialog dialog;
-    AlertDialog alertDialog;
-    KAlertDialog alert_no_conn;
+    AlertDialog alertDialogGPS;
     URL url = null;
+
+    //refresh
+    private Handler handler;
+    private Runnable runnable;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -91,8 +99,7 @@ public class testDebitActivity extends AppCompatActivity {
     ImageView barImageView;
     @BindView(R.id.startButton)
     Button startButton;
-    @BindView(R.id.txt_state)
-    TextView txt_state;
+    @BindView(R.id.layout_sans_conx_test) LinearLayout layout_sans_conx;
 
     @Override
     public void onDestroy() {
@@ -112,6 +119,8 @@ public class testDebitActivity extends AppCompatActivity {
         initView();
         init();
 
+        checkConnexion();
+
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,37 +130,59 @@ public class testDebitActivity extends AppCompatActivity {
                 NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
                 if (GpsStatus == true) {
                     if(activeNetworkInfo == null ) {
-                        Common.cpt_wifi = 0;
-                        alert_no_conn.show();
+                       layout_sans_conx.setVisibility(View.VISIBLE);
                     }
                     else{
-                        try {
-                            url = new URL("http://clients3.google.com/generate_204");
-                            HttpURLConnection httpUrlConnection =  (HttpURLConnection) url.openConnection();
-                            httpUrlConnection.setRequestProperty("User-Agent", "android");
-                            httpUrlConnection.setRequestProperty("Connection", "close");
-                            httpUrlConnection.setConnectTimeout(1500); // Timeout is in seconds
-                            httpUrlConnection.connect();
-                            if (httpUrlConnection.getResponseCode() == 204 && httpUrlConnection.getContentLength() ==0) {
-                                //Toast.makeText(testDebitActivity.this,"connection established",Toast.LENGTH_LONG).show();
-                                dialog.show();
-                                getDeviceLocation();
-                                testDebit();
-                            } else {
-                                Toast.makeText(testDebitActivity.this,R.string.error_connection,Toast.LENGTH_LONG).show();
-                            }
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        dialog.show();
+                        getDeviceLocation();
+                        testDebit();
                     }
                 } else {
-                    alertDialog.show();
+                    alertDialogGPS.show();
                 }
             }
 
         });
+    }
+
+    private void checkConnexion() {
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(activeNetworkInfo == null ) {
+            layout_sans_conx.setVisibility(View.VISIBLE);
+        }
+        else {
+            try {
+                url = new URL("http://clients3.google.com/generate_204");
+                HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+                httpUrlConnection.setRequestProperty("User-Agent", "android");
+                httpUrlConnection.setRequestProperty("Connection", "close");
+                httpUrlConnection.setConnectTimeout(1500); // Timeout is in seconds
+                httpUrlConnection.connect();
+                if (httpUrlConnection.getResponseCode() == 204 && httpUrlConnection.getContentLength() == 0) {
+                    layout_sans_conx.setVisibility(View.GONE);
+                } else {
+                    layout_sans_conx.setVisibility(View.VISIBLE);
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        refresh(1000);
+    }
+
+    public void refresh(int milliseconds){
+        handler = new Handler();
+        runnable = new Runnable() {
+            @RequiresApi(api = JELLY_BEAN_MR1)
+            @Override
+            public void run() {
+                checkConnexion();
+            }
+        };
+        handler.postDelayed(runnable, milliseconds);
     }
 
     private void initView() {
@@ -169,7 +200,7 @@ public class testDebitActivity extends AppCompatActivity {
 
         dialog = new SpotsDialog.Builder().setContext(this).setMessage(R.string.wating_location).setCancelable(false).build();
         //enable GPS
-        alertDialog = new AlertDialog.Builder(this)
+        alertDialogGPS = new AlertDialog.Builder(this)
                 .setTitle(R.string.title_alert_gps)
                 .setMessage(R.string.msg_alert_gps_1)
                 .setPositiveButton(R.string.ok, (dialog, i) -> {
@@ -182,18 +213,6 @@ public class testDebitActivity extends AppCompatActivity {
                     }
                 })
                 .create();
-
-        alert_no_conn = new KAlertDialog(this);
-        alert_no_conn.setContentText(getResources().getString(R.string.check_connection));
-        alert_no_conn.setContentTextSize(18);
-        alert_no_conn.setConfirmText("OK");
-        alert_no_conn.setConfirmClickListener(new KAlertDialog.KAlertClickListener() {
-            @Override
-            public void onClick(KAlertDialog kAlertDialog) {
-                alert_no_conn.dismiss();
-                Common.cpt_no_conn = 0 ;
-            }
-        });
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -262,7 +281,6 @@ public class testDebitActivity extends AppCompatActivity {
         downloadTextView.setText("0 Mbps");
         uploadTextView.setText("0 Mbps");
         startButton.setEnabled(false);
-        startButton.setBackgroundResource(R.drawable.border_button);
         getSpeedTestHostsHandler = new GetSpeedTestHostsHandler();
         getSpeedTestHostsHandler.run();
         new Thread(new Runnable() {
@@ -290,7 +308,6 @@ public class testDebitActivity extends AppCompatActivity {
                                 startButton.setEnabled(true);
                                 startButton.setTextSize(16);
                                 startButton.setText(R.string.btn_redémarrer_le_test);
-                                startButton.setBackgroundResource(android.R.color.transparent);
                                 dialog.dismiss();
                             }
 
@@ -525,7 +542,6 @@ public class testDebitActivity extends AppCompatActivity {
                             startButton.setEnabled(true);
                             startButton.setTextSize(16);
                             startButton.setText(R.string.Redmarrer_le_test);
-                            startButton.setBackgroundResource(android.R.color.transparent);
                         }
                     });
                 }
