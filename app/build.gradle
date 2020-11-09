@@ -104,4 +104,8 @@ dependencies {
     //Room
     annotationProcessor 'androidx.room:room-compiler:2.1.0-beta01'
     implementation 'androidx.room:room-rxjava2:2.1.0-beta01'
+
+
+    //SwipeLayout
+    implementation "com.daimajia.swipelayout:library:1.2.0@aar"
 }

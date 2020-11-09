@@ -31,10 +31,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -51,6 +47,8 @@ import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.daimajia.swipe.SwipeLayout;
 import com.developer.kalert.KAlertDialog;
 import com.example.mynetwork.Common.Common;
 import com.example.mynetwork.DataBase.cellDataBase;
@@ -106,7 +104,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -197,17 +194,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.txt_descr_signal) TextView txt_descr_signal;
     @BindView(R.id.txt_signal) TextView txt_signal;
     @BindView(R.id.layout_signal) LinearLayout layout_signal;
-    @BindView(R.id.cardView_Time) CardView cardView_time;
+    @BindView(R.id.cardView_Time) SwipeLayout cardView_time;
     @BindView(R.id.txt_distance_connectivite) TextView txt_distance_connectivite;
     @BindView(R.id.txt_time_connectivite) TextView txt_time_connectivite;
     @BindView(R.id.img_speech) ImageView img_speech;
-    @BindView(R.id.img_navigation) ImageView img_navigation;
     @BindView(R.id.fab_location_search) FloatingActionButton fab_location_search;
     @BindView(R.id.coordinator_layout_time) CoordinatorLayout coordinator_layout_time;
     @BindView(R.id.layout_absence_connx) LinearLayout layout_absence_connx;
     @BindView(R.id.txt_distance_to_cell) TextView txt_distance_to_cell;
     @BindView(R.id.fab_info_cell) FloatingActionButton fab_info_cell;
     @BindView(R.id.img_info_connx) ImageView img_info_connx;
+
 
     Toolbar toolbar;
     ImageView img_close_info_cell;
@@ -229,7 +226,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (!img_signal_tag) {
             img_signal_tag = true;
             txt_descr_signal.setVisibility(View.VISIBLE);
-            img_drop_down.setImageResource(R.drawable.ic_baseline_arrow_drop_up_24);
+            img_drop_down.setImageResource(R.drawable.ic_arrow_drop_up_24);
         } else {
             img_signal_tag = false;
             txt_descr_signal.setVisibility(View.GONE);
@@ -240,6 +237,29 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @OnClick(R.id.fab_location_search)
     void searchDestination() {
         searchLocation();
+    }
+
+    @OnClick(R.id.img_close_time)
+    void clearTime(){
+        if(markerConnx != null) {
+            markerConnx.remove();
+        }
+
+        if(compositeDisposable != null){
+            compositeDisposable.clear();
+        }
+
+        if (navigationMapRoute != null) {
+            navigationMapRoute.removeRoute();
+        }
+
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition.Builder()
+                        .target(new LatLng(start_lat, start_lon))
+                        .zoom(8)
+                        .build()));
+
+        cardView_time.setVisibility(View.GONE);
     }
 
     @SuppressLint("NewApi")
@@ -425,7 +445,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             share();
         }
         else if (id == R.id.nav_apropos) {
-            apropos();
+            startActivity(new Intent(HomeActivity.this,testActivity.class) );
         }
         else if (id == R.id.nav_carte_couverture) {
             startActivity(new Intent(HomeActivity.this,mapCoverageActivity.class) );
@@ -459,7 +479,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo == null ){
-           /* alert_wifi.dismiss();
+            alert_wifi.dismiss();
             Common.cpt_wifi=0;
             layout_signal.setVisibility(View.GONE);
             coordinator_layout_time.setVisibility(View.GONE);
@@ -481,8 +501,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     });
                     alert_no_conn.show();
                 }
-            }*/
-           searchBestCell();
+            }
+           //searchBestCell();
 
         }
         else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
@@ -529,7 +549,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         }
-        refresh(500);
+        refresh(1000);
     }
 
     public void refresh(int milliseconds){
@@ -547,7 +567,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(14);
+        this.map.setMinZoomPreference(8);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -676,12 +696,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             map.animateCamera(CameraUpdateFactory.newCameraPosition(
                                     new CameraPosition.Builder()
                                             .target(new LatLng(point.latitude(), point.longitude()))
-                                            .zoom(14)
+                                            .zoom(8)
                                             .build()));
 
                             // Create an Icon object for the marker to use
                             IconFactory iconFactory = IconFactory.getInstance(HomeActivity.this);
-                            Icon icon = iconFactory.fromResource(R.drawable.mapbox_marker_icon_default);
+                            Icon icon = iconFactory.fromResource(R.drawable.map_marker_dark);
 
                             // Add the marker to the map
                             if(markerConnx != null) {
@@ -776,7 +796,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             if(predict.isSuccess()){
                                 double time_sec = Double.parseDouble(predict.getResult());
                                 testDebit(start_lat,start_lon,time_sec);
-                                //cardView_time.setVisibility(View.VISIBLE);
+                                cardView_time.setVisibility(View.VISIBLE);
 
                                 double dist = Double.parseDouble(predict.getDistance());
                                 txt_distance_connectivite.setText(String.format("( %s km )", new DecimalFormat("#.##").format(dist / 1000)));
@@ -1415,7 +1435,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Test terminé
                     if (downloadTestFinished && uploadTest.isFinished()) {
-                        cardView_time.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                         break;
                     }
