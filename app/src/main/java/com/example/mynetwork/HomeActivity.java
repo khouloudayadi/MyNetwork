@@ -776,7 +776,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             if(predict.isSuccess()){
                                 double time_sec = Double.parseDouble(predict.getResult());
                                 testDebit(start_lat,start_lon,time_sec);
-                                cardView_time.setVisibility(View.VISIBLE);
+                                //cardView_time.setVisibility(View.VISIBLE);
 
                                 double dist = Double.parseDouble(predict.getDistance());
                                 txt_distance_connectivite.setText(String.format("( %s km )", new DecimalFormat("#.##").format(dist / 1000)));
@@ -1415,6 +1415,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Test terminé
                     if (downloadTestFinished && uploadTest.isFinished()) {
+                        cardView_time.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                         break;
                     }

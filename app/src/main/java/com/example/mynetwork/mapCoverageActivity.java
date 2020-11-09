@@ -323,17 +323,17 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                                                 if (cellsCoverage.get(i).getRadio().equals("GSM")) {
                                                     map.addMarker(new MarkerOptions()
                                                             .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                            .title("GSM")
+                                                            .title("Radio : GSM \n"+ getString(R.string.range) +" : "+cellsCoverage.get(i).getRange() + " mètre")
                                                             .icon(iconGSM));
                                                 } else if (cellsCoverage.get(i).getRadio().equals("UMTS")) {
                                                     map.addMarker(new MarkerOptions()
                                                             .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                            .title("UMTS")
+                                                            .title("Radio : UMTS \n"+ getString(R.string.range) +" : "+cellsCoverage.get(i).getRange() + " mètre")
                                                             .icon(iconUMTS));
                                                 } else {
                                                     map.addMarker(new MarkerOptions()
                                                             .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                            .title("LTE")
+                                                            .title("Radio : LTE \n"+ getString(R.string.range) +" : "+cellsCoverage.get(i).getRange() + " mètre")
                                                             .icon(iconLTE));
                                                 }
                                                 i++;
