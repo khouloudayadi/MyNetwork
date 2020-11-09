@@ -149,11 +149,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private KAlertDialog alert_no_conn;
     private KAlertDialog alert_wifi;
     private AlertDialog alert_gps;
-    AlertDialog.Builder alert_info_cell;
-    AlertDialog.Builder alert_info_conn;
-    AlertDialog show_info_cell;
 
-    AlertDialog show_info_conn;
     //mapBox
     private MapboxMap map;
     private PermissionsManager permissionsManager;
@@ -211,10 +207,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.layout_absence_connx) LinearLayout layout_absence_connx;
     @BindView(R.id.txt_distance_to_cell) TextView txt_distance_to_cell;
     @BindView(R.id.fab_info_cell) FloatingActionButton fab_info_cell;
+    @BindView(R.id.img_info_connx) ImageView img_info_connx;
+
     Toolbar toolbar;
     ImageView img_close_info_cell;
-    ImageView img_close_info_conn;
-    TextView txt_radio,txt_mnc,txt_mcc,txt_area,txt_cid,txt_lat,txt_lon,txt_address,txt_range,txt_volume_ul,txt_volume_dl;
+    TextView txt_radio,txt_mnc,txt_mcc,txt_area,txt_cid,txt_lat,txt_lon,txt_range,txt_volume_ul,txt_volume_dl,txtSpeedDl,txtSpeedUl;
 
     @RequiresApi(api = O)
     @OnClick(R.id.fab_my_location)
@@ -225,16 +222,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 enableLocationComponent(style);
             }
         });
-    }
-
-    @OnClick(R.id.img_detail)
-    void get_info_conn() {
-        show_info_conn = alert_info_conn.show();
-    }
-
-    @OnClick(R.id.fab_info_cell)
-    void get_info_cell() {
-        show_info_cell = alert_info_conn.show();
     }
 
     @OnClick(R.id.img_drop_down)
@@ -282,45 +269,59 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         init();
         initView();
         checkNetwork();
-        View info_cell = getLayoutInflater().inflate(R.layout.layout_info_cell,null);
-        alert_info_cell = new AlertDialog.Builder(this)
-                .setView(info_cell)
-                .setCancelable(false);
-
-        txt_radio=(TextView) info_cell.findViewById(R.id.txt_radio);
-        txt_mcc=(TextView) info_cell.findViewById(R.id.txt_mcc);
-        txt_mnc=(TextView) info_cell.findViewById(R.id.txt_mnc);
-        txt_area=(TextView) info_cell.findViewById(R.id.txt_area);
-        txt_cid=(TextView) info_cell.findViewById(R.id.txt_cid);
-        txt_lat=(TextView) info_cell.findViewById(R.id.txt_lat);
-        txt_lon=(TextView) info_cell.findViewById(R.id.txt_lon);
-        txt_range=(TextView) info_cell.findViewById(R.id.txt_range);
-        //txt_address=(TextView) info_cell.findViewById(R.id.txt_address);
-        img_close_info_cell=(ImageView) info_cell.findViewById(R.id.img_close);
-        img_close_info_cell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                show_info_cell.dismiss();
-            }
-        });
-
-        View info_conn = LayoutInflater.from(this).inflate(R.layout.layout_volume_data,null);
-        alert_info_conn = new AlertDialog.Builder(this)
-                .setView(info_conn)
-                .setCancelable(true);
-        txt_volume_ul=(TextView) info_conn.findViewById(R.id.txtVolumeUl);
-        txt_volume_dl=(TextView) info_conn.findViewById(R.id.txtVolumeDl);
-        img_close_info_conn=(ImageView) info_conn.findViewById(R.id.img_close_info_conn);
-        img_close_info_conn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                show_info_conn.dismiss();
-            }
-        });
 
         //mapview
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view_info_conn = inflater.inflate(R.layout.layout_volume_data, null);
+        txt_volume_ul=(TextView) view_info_conn.findViewById(R.id.txtVolumeUl);
+        txt_volume_dl=(TextView) view_info_conn.findViewById(R.id.txtVolumeDl);
+        txtSpeedUl=(TextView) view_info_conn.findViewById(R.id.txtSpeedUl);
+        txtSpeedDl=(TextView) view_info_conn.findViewById(R.id.txtSpeedDl);
+
+        AlertDialog.Builder alert_info_connx = new AlertDialog.Builder(HomeActivity.this);
+        alert_info_connx.setView(view_info_conn);
+        alert_info_connx.setCancelable(true);
+        AlertDialog dialog_info_connx = alert_info_connx.create();
+        img_info_connx.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_info_connx.show();
+            }
+        });
+
+
+
+        View view_info_cell = inflater.inflate(R.layout.layout_info_cell, null);
+        txt_radio=(TextView) view_info_cell.findViewById(R.id.txt_radio);
+        txt_mcc=(TextView) view_info_cell.findViewById(R.id.txt_mcc);
+        txt_mnc=(TextView) view_info_cell.findViewById(R.id.txt_mnc);
+        txt_area=(TextView) view_info_cell.findViewById(R.id.txt_area);
+        txt_cid=(TextView) view_info_cell.findViewById(R.id.txt_cid);
+        txt_lat=(TextView) view_info_cell.findViewById(R.id.txt_lat);
+        txt_lon=(TextView) view_info_cell.findViewById(R.id.txt_lon);
+        txt_range=(TextView) view_info_cell.findViewById(R.id.txt_range);
+        img_close_info_cell = (ImageView) view_info_cell.findViewById(R.id.img_close_cell);
+        AlertDialog.Builder alert_info_cell = new AlertDialog.Builder(HomeActivity.this);
+        alert_info_cell.setView(view_info_cell);
+        alert_info_cell.setCancelable(false);
+        AlertDialog dialog_info_cell = alert_info_cell.create();
+
+        fab_info_cell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_info_cell.show();
+            }
+        });
+
+        img_close_info_cell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_info_cell.dismiss();
+            }
+        });
 
         txt_name_operateur = (TextView) headerView.findViewById(R.id.txt_nom_operateur);
         txt_name_operateur.setText(carrierName);
@@ -363,8 +364,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
             }
         });
-
-       //testDebit(35.8626285,10.5999459,169.2510821673623);
 
     }
 
@@ -460,7 +459,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo == null ){
-            /*alert_wifi.dismiss();
+           /* alert_wifi.dismiss();
             Common.cpt_wifi=0;
             layout_signal.setVisibility(View.GONE);
             coordinator_layout_time.setVisibility(View.GONE);
@@ -482,9 +481,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     });
                     alert_no_conn.show();
                 }
-            }
-*/
-            searchBestCell();
+            }*/
+           searchBestCell();
+
         }
         else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
             Common.cpt_wifi=0;
@@ -777,7 +776,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             if(predict.isSuccess()){
                                 double time_sec = Double.parseDouble(predict.getResult());
                                 testDebit(start_lat,start_lon,time_sec);
-                                //cardView_time.setVisibility(View.VISIBLE);
+                                cardView_time.setVisibility(View.VISIBLE);
 
                                 double dist = Double.parseDouble(predict.getDistance());
                                 txt_distance_connectivite.setText(String.format("( %s km )", new DecimalFormat("#.##").format(dist / 1000)));
@@ -1210,7 +1209,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         txt_lat.setText(String.valueOf(bestCell.getLat()));
                         txt_lon.setText(String.valueOf(bestCell.getLon()));
                         txt_range.setText(String.valueOf(bestCell.getRange())+ " mètre");
-
                     }
                 },throwable -> { Log.i("searchcell",throwable.getMessage());})
         );
@@ -1375,12 +1373,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         if (uploadTest.getFinalUploadRate() == 0) {
                             Log.d("getDebitUL","Error Upload");
                             txt_volume_ul.setText("Error Upload");
+                            txtSpeedUl.setText("Error Upload");
                         } else {
                             //Success
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     txt_volume_ul.setText(dec.format((uploadTest.getFinalUploadRate() * timeConn)/1000.0)+" Gbits");
+                                    txtSpeedUl.setText(dec.format(uploadTest.getFinalUploadRate())+" Mbps");
                                     Log.d("getDebitUL",dec.format(uploadTest.getFinalUploadRate()));//Mbps
                                     Log.d("gettimeUL",dec.format(timeConn));//seconde
                                     Log.d("getVolumeUL",dec.format(uploadTest.getFinalUploadRate() * timeConn));//Gbits
@@ -1395,13 +1395,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             //Failure
                             if (downloadTest.getFinalDownloadRate() == 0) {
                                 Log.d("getDebitDL","Error Download");
-                                //txt_volume_dl.setText("Error Download");
+                                txt_volume_dl.setText("Error Download");
+                                txtSpeedDl.setText("Error Download");
                             } else {
                                 //Success
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         txt_volume_dl.setText(dec.format((downloadTest.getFinalDownloadRate() * timeConn)/1000.0)+" Gbits");
+                                        txtSpeedDl.setText(dec.format(downloadTest.getFinalDownloadRate())+" Mbps");
                                         Log.d("getDebitDL",dec.format(downloadTest.getFinalDownloadRate()));//Mbps
                                         Log.d("gettimeDL",dec.format(timeConn));//seconde
                                         Log.d("getVolumeDL",dec.format(downloadTest.getFinalDownloadRate() * timeConn));//Mbits
@@ -1413,7 +1415,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Test terminé
                     if (downloadTestFinished && uploadTest.isFinished()) {
-                        cardView_time.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                         break;
                     }
@@ -1426,7 +1427,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     }
                     if (uploadTestStarted && !uploadTestFinished) {
                         try {
-                            Thread.sleep(300);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                         }
                     }

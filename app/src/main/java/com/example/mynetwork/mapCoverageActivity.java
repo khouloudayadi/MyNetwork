@@ -10,7 +10,6 @@ import androidx.cardview.widget.CardView;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -18,7 +17,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
@@ -274,76 +272,92 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
     }
 
     private void getcarteCouverture(){
-        //Log.d("lat2", String.valueOf(locationComponent.getLastKnownLocation().getLatitude()));
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(compositeDisposable != null){
             compositeDisposable.clear();
         }
-        Location LocationUser = new Location("LocationUser");
-        LocationUser.setLatitude(lat);
-        LocationUser.setLongitude(lon);
-        Location cellLocation = new Location("cellLocation");
-        compositeDisposable.add(myNetworkAPI.getCell()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(cellModel -> {
-                            if (cellModel.isSuccess()) {
-                                Log.d("sizeCell1", String.valueOf(cellModel.getResult().size()));
-                                for (Cell cell : cellModel.getResult()) {
-                                    cellLocation.setLatitude(cell.getLat());
-                                    cellLocation.setLongitude(cell.getLon());
-                                    distance_to_cell = Math.round(LocationUser.distanceTo(cellLocation));
-                                    mapCoverageModel mapCoveragItem = new mapCoverageModel(cell.getRadio(), cell.getCid(), cell.getArea(), cell.getRange(), cell.getLat(), cell.getLon(), distance_to_cell);
-                                    cellsCoverage.add(mapCoveragItem);
-                                }
-                                Log.d("sizeCell2", String.valueOf(cellsCoverage.size()));
-                                Collections.sort(cellsCoverage);
-                                //System.out.println(cellsCoverage.toString());
-                                map.animateCamera(CameraUpdateFactory.newCameraPosition(
-                                        new CameraPosition.Builder()
-                                                .target(new LatLng(lat, lon))
-                                                .zoom(14)
-                                                .build()));
+        if(activeNetworkInfo != null ) {
+            try {
+                url = new URL("http://clients3.google.com/generate_204");
+                HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+                httpUrlConnection.setRequestProperty("User-Agent", "android");
+                httpUrlConnection.setRequestProperty("Connection", "close");
+                httpUrlConnection.setConnectTimeout(1500); // Timeout is in seconds
+                httpUrlConnection.connect();
+                if (httpUrlConnection.getResponseCode() == 204 && httpUrlConnection.getContentLength() == 0) {
+                    Location LocationUser = new Location("LocationUser");
+                    LocationUser.setLatitude(lat);
+                    LocationUser.setLongitude(lon);
+                    Location cellLocation = new Location("cellLocation");
+                    compositeDisposable.add(myNetworkAPI.getCell()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(cellModel -> {
+                                        if (cellModel.isSuccess()) {
+                                            Log.d("sizeCell1", String.valueOf(cellModel.getResult().size()));
+                                            for (Cell cell : cellModel.getResult()) {
+                                                cellLocation.setLatitude(cell.getLat());
+                                                cellLocation.setLongitude(cell.getLon());
+                                                distance_to_cell = Math.round(LocationUser.distanceTo(cellLocation));
+                                                mapCoverageModel mapCoveragItem = new mapCoverageModel(cell.getRadio(), cell.getCid(), cell.getArea(), cell.getRange(), cell.getLat(), cell.getLon(), distance_to_cell);
+                                                cellsCoverage.add(mapCoveragItem);
+                                            }
+                                            Log.d("sizeCell2", String.valueOf(cellsCoverage.size()));
+                                            Collections.sort(cellsCoverage);
+                                            //System.out.println(cellsCoverage.toString());
+                                            map.animateCamera(CameraUpdateFactory.newCameraPosition(
+                                                    new CameraPosition.Builder()
+                                                            .target(new LatLng(lat, lon))
+                                                            .zoom(14)
+                                                            .build()));
 
-                                // Create an Icon object for the marker to use
-                                IconFactory iconFactory = IconFactory.getInstance(mapCoverageActivity.this);
-                                Icon iconGSM = iconFactory.fromResource(R.drawable.icongsm);
-                                Icon iconUMTS = iconFactory.fromResource(R.drawable.iconumts);
-                                Icon iconLTE = iconFactory.fromResource(R.drawable.iconlte);
-                                int i = 0;
-                                while (i < 15577) {
-                                    System.out.println(cellsCoverage.get(i).toString());
-                                    if (cellsCoverage.get(i).getRadio().equals("GSM")) {
-                                        map.addMarker(new MarkerOptions()
-                                                .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                .title("GSM")
-                                                .icon(iconGSM));
-                                    } else if (cellsCoverage.get(i).getRadio().equals("UMTS")) {
-                                        map.addMarker(new MarkerOptions()
-                                                .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                .title("UMTS")
-                                                .icon(iconUMTS));
-                                    } else {
-                                        map.addMarker(new MarkerOptions()
-                                                .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                .title("LTE")
-                                                .icon(iconLTE));
+                                            // Create an Icon object for the marker to use
+                                            IconFactory iconFactory = IconFactory.getInstance(mapCoverageActivity.this);
+                                            Icon iconGSM = iconFactory.fromResource(R.drawable.icongsm);
+                                            Icon iconUMTS = iconFactory.fromResource(R.drawable.iconumts);
+                                            Icon iconLTE = iconFactory.fromResource(R.drawable.iconlte);
+                                            int i = 0;
+                                            while (i < 15577) {
+                                                System.out.println(cellsCoverage.get(i).toString());
+                                                if (cellsCoverage.get(i).getRadio().equals("GSM")) {
+                                                    map.addMarker(new MarkerOptions()
+                                                            .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                            .title("GSM")
+                                                            .icon(iconGSM));
+                                                } else if (cellsCoverage.get(i).getRadio().equals("UMTS")) {
+                                                    map.addMarker(new MarkerOptions()
+                                                            .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                            .title("UMTS")
+                                                            .icon(iconUMTS));
+                                                } else {
+                                                    map.addMarker(new MarkerOptions()
+                                                            .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                            .title("LTE")
+                                                            .icon(iconLTE));
+                                                }
+                                                i++;
+                                            }
+                                            card_legend.setVisibility(View.VISIBLE);
+                                        } else {
+                                            Log.d("getCellDB", cellModel.getMessage());
+                                        }
+                                        progressBar.setVisibility(View.GONE);
+                                    },
+                                    throwable -> {
+                                        progressBar.setVisibility(View.GONE);
+                                        Log.d("getCellDB", throwable.getMessage());
+                                        Toast.makeText(mapCoverageActivity.this, R.string.errorServer, Toast.LENGTH_LONG).show();
                                     }
-                                    i++;
-                                }
-                                card_legend.setVisibility(View.VISIBLE);
-                            } else {
-                                Log.d("getCellDB", cellModel.getMessage());
-                            }
-                            progressBar.setVisibility(View.GONE);
-                        },
-                        throwable -> {
-                            progressBar.setVisibility(View.GONE);
-                            Log.d("getCellDB", throwable.getMessage());
-                            Toast.makeText(mapCoverageActivity.this, R.string.errorServer, Toast.LENGTH_LONG).show();
-                        }
-                )
-        );
-
+                            )
+                    );
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -430,14 +444,6 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                 }
                  lat = result.getLastLocation().getLatitude();
                 lon = result.getLastLocation().getLongitude();
-
-                // Create a Toast which displays the new location's coordinates
-                /*Toast.makeText(activity, String.format(activity.getString(R.string.new_location),
-                        String.valueOf(result.getLastLocation().getLatitude()),
-                        String.valueOf(result.getLastLocation().getLongitude())),
-                        Toast.LENGTH_SHORT).show();*/
-
-                // Pass the new location to the Maps SDK's LocationComponent
                 if (activity.map != null && result.getLastLocation() != null) {
                     activity.map.getLocationComponent().forceLocationUpdate(result.getLastLocation());
                 }

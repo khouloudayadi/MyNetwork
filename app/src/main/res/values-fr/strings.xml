@@ -71,5 +71,6 @@
     <string name="error_test_debit">Sans connexion Internet, l\'application ne peut pas réaliser de test de débit.</string>
     <string name="new_location">New lat: %1$s New longitude: %2$s</string>
     <string name="error_adresse">veuillez saisir une adresse valide</string>
+    <string name="bandwidth">La qualité de la bande passante :</string>
     <string name="alert_best_antenne">"Soyez vigilant à votre environnement lorsque vous vous déplacer vers l'antenne la plus proche."</string>
 </resources>

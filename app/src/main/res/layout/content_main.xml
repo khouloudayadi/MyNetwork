@@ -224,7 +224,8 @@
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginLeft="5dp"
                                 android:layout_weight="10"
                                 android:orientation="horizontal">
                                 <TextView
@@ -255,6 +256,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="10"
                                 android:layout_marginTop="6dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="10dp"
                                 android:layout_marginBottom="12dp"
                                 android:orientation="horizontal">
                                 <ImageView
@@ -262,23 +265,23 @@
                                     android:layout_margin="5dp"
                                     android:layout_width="30dp"
                                     android:layout_weight="1"
-                                    android:layout_height="32dp"
+                                    android:layout_height="30dp"
                                     android:src="@drawable/ic_near_me_24"
                                     app:tint="@color/backgroung_icon_rx" />
                                 <ImageView
                                     android:id="@+id/img_speech"
                                     android:layout_width="30dp"
-                                    android:layout_height="33dp"
+                                    android:layout_height="30dp"
                                     android:layout_weight="1"
                                     android:layout_margin="5dp"
                                     app:tint="@color/backgroung_icon_rx"
                                     android:src="@drawable/ic_speech_off_24" />
                                 <ImageView
-                                    android:id="@+id/img_detail"
+                                    android:id="@+id/img_info_connx"
                                     android:layout_margin="5dp"
-                                    android:layout_width="32dp"
+                                    android:layout_width="30dp"
                                     android:layout_weight="1"
-                                    android:layout_height="33dp"
+                                    android:layout_height="30dp"
                                     android:src="@drawable/ic_info_outline_24"
                                     app:tint="@color/backgroung_icon_rx"/>
                         </LinearLayout>
