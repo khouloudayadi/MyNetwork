@@ -445,7 +445,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             share();
         }
         else if (id == R.id.nav_apropos) {
-            startActivity(new Intent(HomeActivity.this,testActivity.class) );
+           apropos();
         }
         else if (id == R.id.nav_carte_couverture) {
             startActivity(new Intent(HomeActivity.this,mapCoverageActivity.class) );
