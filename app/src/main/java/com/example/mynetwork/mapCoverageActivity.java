@@ -6,15 +6,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -28,7 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.example.mynetwork.Common.Common;
-import com.example.mynetwork.DataBase.cellItem;
 import com.example.mynetwork.Model.Cell;
 import com.example.mynetwork.Model.mapCoverageModel;
 import com.example.mynetwork.Retrofit.INetworkAPI;
@@ -43,7 +45,6 @@ import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Icon;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
-import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -56,8 +57,6 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.localization.LocalizationPlugin;
-
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
@@ -67,16 +66,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static java.lang.Thread.sleep;
+
 
 public class mapCoverageActivity extends AppCompatActivity implements PermissionsListener, OnMapReadyCallback {
     List<mapCoverageModel> cellsCoverage = new ArrayList<>();
@@ -263,13 +259,21 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         map = mapboxMap;
         this.map.setMinZoomPreference(14);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
                 getcarteCouverture();
+                map.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
+                    @Override
+                    public boolean onMapLongClick(@NonNull LatLng point) {
+                        return false;
+                    }
+                });
             }
         });
     }
+
 
     private void getcarteCouverture(){
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -323,18 +327,21 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                                                 if (cellsCoverage.get(i).getRadio().equals("GSM")) {
                                                     map.addMarker(new MarkerOptions()
                                                             .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                            .title("Radio : GSM \n"+ getString(R.string.range) +" : "+cellsCoverage.get(i).getRange() + " mètre")
-                                                            .icon(iconGSM));
+                                                            .title("Radio : GSM \n"+ getString(R.string.range) +cellsCoverage.get(i).getRange() + " mètre")
+                                                            .icon(iconGSM)
+                                                            .snippet("2G"));
                                                 } else if (cellsCoverage.get(i).getRadio().equals("UMTS")) {
                                                     map.addMarker(new MarkerOptions()
                                                             .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                            .title("Radio : UMTS \n"+ getString(R.string.range) +" : "+cellsCoverage.get(i).getRange() + " mètre")
-                                                            .icon(iconUMTS));
+                                                            .title("Radio : UMTS \n"+ getString(R.string.range)+cellsCoverage.get(i).getRange() + " mètre")
+                                                            .icon(iconUMTS)
+                                                            .snippet("3G"));
                                                 } else {
                                                     map.addMarker(new MarkerOptions()
                                                             .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
-                                                            .title("Radio : LTE \n"+ getString(R.string.range) +" : "+cellsCoverage.get(i).getRange() + " mètre")
-                                                            .icon(iconLTE));
+                                                            .title("Radio : LTE \n"+ getString(R.string.range) +cellsCoverage.get(i).getRange() + " mètre")
+                                                            .icon(iconLTE)
+                                                            .snippet("4G"));
                                                 }
                                                 i++;
                                             }

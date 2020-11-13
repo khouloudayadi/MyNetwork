@@ -130,6 +130,7 @@
             android:visibility="gone"
             android:layout_height="wrap_content" />
     </LinearLayout>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_margin="2dp"
@@ -278,4 +279,6 @@
             </com.daimajia.swipe.SwipeLayout>
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
 </LinearLayout>
