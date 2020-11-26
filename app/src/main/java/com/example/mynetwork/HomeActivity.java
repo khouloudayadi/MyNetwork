@@ -430,13 +430,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_network) {
-            network();
+           checkNetwork();
         }
         else if (id == R.id.nav_test_debit) {
             startActivity(new Intent(HomeActivity.this,testDebitActivity.class) );
@@ -469,7 +470,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private void network(){}
 
     @RequiresApi(api = JELLY_BEAN_MR1)
     @SuppressLint("MissingPermission")
@@ -565,7 +565,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(11);
+        this.map.setMinZoomPreference(10);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
