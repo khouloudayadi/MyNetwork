@@ -252,6 +252,7 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
                         enableLocationComponent(style);
+                        getcarteCouverture();
                     }
                 });
                 return true;
@@ -495,9 +496,9 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                     if (addressList != null && addressList.size() > 0) {
                         Address address = (Address) addressList.get(0);
                         StringBuilder sb = new StringBuilder();
-                        lat=address.getLatitude();
-                        lon=address.getLongitude();
-                        getcarteCouverture();
+                        double latSearch=address.getLatitude();
+                        double lonSearch=address.getLongitude();
+                        getcarteCouverture(latSearch,lonSearch);
                     }
                 } catch (IOException e) {
                     Log.e("error_geocode", "Unable to connect to Geocoder", e);
@@ -505,6 +506,98 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
             }
         };
         thread.start();
+    }
+
+    private void getcarteCouverture(double lat,double lon){
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(compositeDisposable != null){
+            compositeDisposable.clear();
+        }
+        if(activeNetworkInfo != null ) {
+            try {
+                url = new URL("http://clients3.google.com/generate_204");
+                HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+                httpUrlConnection.setRequestProperty("User-Agent", "android");
+                httpUrlConnection.setRequestProperty("Connection", "close");
+                httpUrlConnection.setConnectTimeout(1500); // Timeout is in seconds
+                httpUrlConnection.connect();
+                if (httpUrlConnection.getResponseCode() == 204 && httpUrlConnection.getContentLength() == 0) {
+                    Location LocationUser = new Location("LocationUser");
+                    LocationUser.setLatitude(lat);
+                    LocationUser.setLongitude(lon);
+                    Location cellLocation = new Location("cellLocation");
+                    compositeDisposable.add(myNetworkAPI.getCell()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(cellModel -> {
+                                        if (cellModel.isSuccess()) {
+                                            Log.d("sizeCell1", String.valueOf(cellModel.getResult().size()));
+                                            for (Cell cell : cellModel.getResult()) {
+                                                cellLocation.setLatitude(cell.getLat());
+                                                cellLocation.setLongitude(cell.getLon());
+                                                distance_to_cell = Math.round(LocationUser.distanceTo(cellLocation));
+                                                mapCoverageModel mapCoveragItem = new mapCoverageModel(cell.getRadio(), cell.getCid(), cell.getArea(), cell.getRange(), cell.getLat(), cell.getLon(), distance_to_cell);
+                                                cellsCoverage.add(mapCoveragItem);
+                                            }
+                                            Log.d("sizeCell2", String.valueOf(cellsCoverage.size()));
+                                            Collections.sort(cellsCoverage);
+                                            //System.out.println(cellsCoverage.toString());
+                                            map.animateCamera(CameraUpdateFactory.newCameraPosition(
+                                                    new CameraPosition.Builder()
+                                                            .target(new LatLng(lat, lon))
+                                                            .zoom(14)
+                                                            .build()));
+
+                                            // Create an Icon object for the marker to use
+                                            IconFactory iconFactory = IconFactory.getInstance(mapCoverageActivity.this);
+                                            Icon iconGSM = iconFactory.fromResource(R.drawable.icongsm);
+                                            Icon iconUMTS = iconFactory.fromResource(R.drawable.iconumts);
+                                            Icon iconLTE = iconFactory.fromResource(R.drawable.iconlte);
+                                            int i = 0;
+                                            while (i < 15577) {
+                                                System.out.println(cellsCoverage.get(i).toString());
+                                                if (cellsCoverage.get(i).getRadio().equals("GSM")) {
+                                                    map.addMarker(new MarkerOptions()
+                                                            .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                            .title("Radio : GSM \n"+ getString(R.string.range) +cellsCoverage.get(i).getRange() + " mètre")
+                                                            .icon(iconGSM)
+                                                            .snippet("2G"));
+                                                } else if (cellsCoverage.get(i).getRadio().equals("UMTS")) {
+                                                    map.addMarker(new MarkerOptions()
+                                                            .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                            .title("Radio : UMTS \n"+ getString(R.string.range)+cellsCoverage.get(i).getRange() + " mètre")
+                                                            .icon(iconUMTS)
+                                                            .snippet("3G"));
+                                                } else {
+                                                    map.addMarker(new MarkerOptions()
+                                                            .position(new LatLng(cellsCoverage.get(i).getLat(), cellsCoverage.get(i).getLon()))
+                                                            .title("Radio : LTE \n"+ getString(R.string.range) +cellsCoverage.get(i).getRange() + " mètre")
+                                                            .icon(iconLTE)
+                                                            .snippet("4G"));
+                                                }
+                                                i++;
+                                            }
+                                            card_legend.setVisibility(View.VISIBLE);
+                                        } else {
+                                            Log.d("getCellDB", cellModel.getMessage());
+                                        }
+                                        progressBar.setVisibility(View.GONE);
+                                    },
+                                    throwable -> {
+                                        progressBar.setVisibility(View.GONE);
+                                        Log.d("getCellDB", throwable.getMessage());
+                                        Toast.makeText(mapCoverageActivity.this, R.string.errorServer, Toast.LENGTH_LONG).show();
+                                    }
+                            )
+                    );
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
