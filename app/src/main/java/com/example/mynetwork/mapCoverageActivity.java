@@ -2,6 +2,7 @@ package com.example.mynetwork;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -11,16 +12,21 @@ import androidx.core.content.ContextCompat;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +37,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.example.mynetwork.Common.Common;
+import com.example.mynetwork.DataBase.cellDataBase;
+import com.example.mynetwork.DataBase.localCellDataSource;
 import com.example.mynetwork.Model.Cell;
 import com.example.mynetwork.Model.mapCoverageModel;
 import com.example.mynetwork.Retrofit.INetworkAPI;
@@ -86,6 +94,9 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
     static private double lat;
     static private double lon;
 
+    boolean GpsStatus;
+    private LocationManager locationManager;
+
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     INetworkAPI myNetworkAPI;
 
@@ -113,6 +124,7 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         setContentView(R.layout.activity_map_coverage);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+        init();
         initView();
         checkConnexion();
 
@@ -167,14 +179,20 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         handler.postDelayed(runnable, milliseconds);
     }
 
+    private void init() {
+        myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
+        locationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        assert locationManager != null;
+    }
+
     private void initView() {
-          //init View
+        //init View
         ButterKnife.bind(this);
         toolbar.setTitle(R.string.carte_couverture);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        myNetworkAPI = RetrofitClient.getInstance(Common.baseUrl).create(INetworkAPI.class);
+
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -243,7 +261,6 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
     }
 
     private void startSearchPlace(String query_name_place) {
-        //getcarteCouverture(lat,lon);
         if (TextUtils.isEmpty(query_name_place)) {
             Toast.makeText(mapCoverageActivity.this,R.string.error_adresse,Toast.LENGTH_SHORT).show();
         }
@@ -251,25 +268,26 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
             getAddressFromLocation(query_name_place, getApplicationContext());
         }
 
-        }
+    }
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
-        progressBar.setVisibility(View.VISIBLE);
         map = mapboxMap;
         this.map.setMinZoomPreference(14);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onStyleLoaded(@NonNull Style style) {
-                enableLocationComponent(style);
-                getcarteCouverture();
-                map.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
-                    @Override
-                    public boolean onMapLongClick(@NonNull LatLng point) {
-                        return false;
-                    }
-                });
+                progressBar.setVisibility(View.VISIBLE);
+                GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                if(GpsStatus == true) {
+                    enableLocationComponent(style);
+                    getcarteCouverture();
+                }
+                else {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(mapCoverageActivity.this,R.string.msg_alert_gps,Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -370,26 +388,25 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
     @SuppressLint("MissingPermission")
     private void enableLocationComponent(Style style) {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            // Get an instance of the component
-            LocationComponent locationComponent = map.getLocationComponent();
-            // Set the LocationComponent activation options
-            locationComponentActivationOptions = LocationComponentActivationOptions.builder(this, style)
-                            .useDefaultLocationEngine(false)
-                            .build();
-            // Activate with the LocationComponentActivationOptions object
-            locationComponent.activateLocationComponent(locationComponentActivationOptions);
-            // Enable to make component visible
-            locationComponent.setLocationComponentEnabled(true);
-            // Set the component's camera mode
-            locationComponent.setCameraMode(CameraMode.TRACKING);
-            // Set the component's render mode
-            locationComponent.setRenderMode(RenderMode.COMPASS);
-            initLocationEngine();
-        }
-        else {
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-        }
+                // Get an instance of the component
+                LocationComponent locationComponent = map.getLocationComponent();
+                // Set the LocationComponent activation options
+                locationComponentActivationOptions = LocationComponentActivationOptions.builder(this, style)
+                        .useDefaultLocationEngine(false)
+                        .build();
+                // Activate with the LocationComponentActivationOptions object
+                locationComponent.activateLocationComponent(locationComponentActivationOptions);
+                // Enable to make component visible
+                locationComponent.setLocationComponentEnabled(true);
+                // Set the component's camera mode
+                locationComponent.setCameraMode(CameraMode.TRACKING);
+                // Set the component's render mode
+                locationComponent.setRenderMode(RenderMode.COMPASS);
+                initLocationEngine();
+            } else {
+                permissionsManager = new PermissionsManager(this);
+                permissionsManager.requestLocationPermissions(this);
+            }
     }
 
     @SuppressLint("MissingPermission")
@@ -449,7 +466,7 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
                 if (location == null) {
                     return;
                 }
-                 lat = result.getLastLocation().getLatitude();
+                lat = result.getLastLocation().getLatitude();
                 lon = result.getLastLocation().getLongitude();
                 if (activity.map != null && result.getLastLocation() != null) {
                     activity.map.getLocationComponent().forceLocationUpdate(result.getLastLocation());
@@ -534,5 +551,6 @@ public class mapCoverageActivity extends AppCompatActivity implements Permission
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
+
 
 }

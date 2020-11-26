@@ -19,14 +19,20 @@
     <string name="desc_signal_fair">Des vitesses de données justes mais utiles, rapides et fiables peuvent être atteintes, mais des données marginales avec des abandons sont possibles</string>
     <string name="desc_signal_poor">Les performances chuteront considérablement</string>
     <string name="Volume_data">Le volume de données théorique possible, que vous pouvez exploiter :</string>
-
-
     <string name="find_cell">Trouver l\'antenne la plus proche</string>
-    <string name="hote_pb">Il y avait un problème pour obtenir l\'emplacement de l\'hôte</string>
-    <string name="Redmarrer_le_test">Redémarrer le test</string>
-    <string name="Erreur_de_téléchargement">Erreur de téléchargement ...</string>
-    <string name="Erreur_d_envoi">Erreur d\'envoi ...</string>
-    <string name="Erreur_ping">Erreur de ping ...</string>
+
+    <string name="error_hote">Il y avait un problème pour obtenir l\'emplacement de l\'hôte</string>
+    <string name="restart_test">Redémarrer le test</string>
+    <string name="error_download">Erreur de téléchargement ...</string>
+    <string name="error_upload">Erreur d\'envoi ...</string>
+    <string name="error_ping">Erreur de ping ...</string>
+    <string name="ping_cours">Ping en cours ...</string>
+    <string name="download_cours">Download en cours ...</string>
+    <string name="upload_cours">Upload en cours ...</string>
+    <string name="ping">Temps de réponse</string>
+    <string name="dowload">Descendant</string>
+    <string name="upload">Montant</string>
+
     <string name="Sub_type">Sous-type de réseau :</string>
     <string name="non_connecte">Non Connecté à internet</string>
     <string name="connecetd_wifi">Connecté par Wi-Fi</string>
@@ -41,19 +47,16 @@
     <string name="close">Fermer</string>
     <string name="meilleur_serveur">Sélection du meilleur serveur...</string>
     <string name="hoste_location">Lieu de l\'hôte: %s [Distance: %s km]</string>
-    <string name="msg_alert_gps_1">Cette application a besoin d\'accès à la position de l\'appareil pour afficher ses fonctionnalités</string>
+    <string name="msg_alert_gps_test">Cette application a besoin d\'accès à la position de l\'appareil pour afficher ses fonctionnalités</string>
     <string name="msg_alert_gps">Vous devez activer le GPS pour ajouter de nouveaux résultats à la carte</string>
     <string name="alert_wifi_title">Vous êtes connecté par Wi-Fi!</string>
     <string name="alert_wifi_text">Veuillez activer vos données mobiles !</string>
     <string name="txt_unknown_network">Réseau inconnue</string>
     <string name="Permission_Denied">Permission refusée</string>
     <string name="cancel_alert">Annuler</string>
-    <string name="permission_title">L\'autorisation d\'accéder à l\'emplacement de l\'appareil est définitivement refusée. vous devez accéder au paramètre pour autoriser l\'autorisation.</string>
+    <string name="permission_title">L\'autorisation d\'accéder à l\'emplacement de l\'appareil est définitivement refusée. vous devez accéder au paramètre pour l\'autoriser.</string>
     <string name="tts">Il vous reste %s et %s kilometer</string>
     <string name="wating_location">En attente de la localisation ...</string>
-    <string name="ping">Temps de réponse</string>
-    <string name="dowload">Descendant</string>
-    <string name="upload">Montant</string>
     <string name="distance_to_cell">Distance de L\'antenne :</string>
     <string name="network_type">Type de réseau :</string>
     <string name="mobile_country_code">Code de pays mobile (MCC) :</string>
@@ -61,7 +64,7 @@
     <string name="range">Portée :</string>
     <string name="cellid">Cellule ID (CID) :</string>
     <string name="area">Code région :</string>
-    <string name="errorServer">Échec de la connexion au serveur. Veuillez réessayer</string>
+    <string name="errorServer">Échec de la connexion au serveur, Veuillez réessayer</string>
     <string name="address">Adresse</string>
     <string name="dispo_conn">Disponibilité de la connexion réseau</string>
     <string name="search">Chercher</string>
@@ -69,8 +72,28 @@
     <string name="coverage_date">Couverture Juin 2019</string>
     <string name="error_map_coverage">Sans connexion Internet, l\'application ne peut pas afficher la carte de couverture.</string>
     <string name="error_test_debit">Sans connexion Internet, l\'application ne peut pas réaliser de test de débit.</string>
+    <string name="error_connx_splashScreen">Sans connexion Internet, vous ne pouvez pas utiliser l\'application</string>
     <string name="new_location">New lat: %1$s New longitude: %2$s</string>
     <string name="error_adresse">veuillez saisir une adresse valide</string>
     <string name="bandwidth">La qualité de la bande passante :</string>
-    <string name="alert_best_antenne">"Soyez vigilant à votre environnement lorsque vous vous déplacer vers l'antenne la plus proche."</string>
+    <string name="alert_best_antenne">Soyez vigilant à votre environnement lorsque vous vous déplacer vers l\'antenne la plus proche.</string>
+    <string name="conditions">Conditions d\'utilisation</string>
+    <string name="Fonction">Fonctionnalités</string>
+    <string name="important">Important</string>
+    <string name="amelioration">Amélioration de L\'application et Notification </string>
+    <string name="copyright">Copyright</string>
+    <string name="txt_condition">L\'application Mon Réseau est accessible à tous les clients Orange.Pour pouvoir utiliser toutes les fonctionnalités de l\'application, l\'utilisateur doit remplir les conditions suivantes :</string>
+    <string name="txt_condition1">- Disposer d\'une offre internet en mobilité.</string>
+    <string name="txt_condition2">- Disposer d\'un terminal mobile de type smartphone ou tablette compatible.</string>
+    <string name="txt_features">L\'application permet à l\'utilisateur de :</string>
+    <string name="txt_features1">- S\'informer sur les réseaux mobiles et statut de connexion internet.</string>
+    <string name="txt_features2">- S\'informer sur le temps de disponibilité de la connectivité internet.</string>
+    <string name="txt_features3">- S\'informer en temps réel sur l\'intensité du signal.</string>
+    <string name="txt_features4">- Réaliser un test de débit sur le réseau mobile.</string>
+    <string name="txt_features5">- Consulter, sur une carte la couverture mobile Orange TN (zones de couverture), et faire une recherche sur une zone géographique précise.</string>
+    <string name="txt_important1">- Le débit mesuré via cette application est le débit dont dispose l\'utilisateur à un moment donné sur le réseau Orange TN. Il est mesuré par l\'application en tenant compte des limitations liées au réseau et à sa charge, à la localisation et de l\'équipement que cet utilisateur utilise par la mesure.</string>
+    <string name="txt_important2">- Sur certains systèmes d\'exploitation, l\'application ne permet pas de reconnaitre le type de réseau Wi-Fi utilisé.</string>
+    <string name="txt_imprvement1">Mon réseau collecte des informations concernant l\'utilisation de l\'application et nous envoie ces informations pour des analyses statistiques afin d\'améliorer le service qui vous est proposé. Nous collectons des données sur l\'intensité du signal, le réseau, la localisation et d\'autres détecteurs d\'appareils.</string>
+    <string name="txt_imprvement2">La collecte de ces informations nous permet également d\'améliorer la pertinence des messages de notification envoyés par le service. Vous avez la possibilité de désactiver ce processus à tout moment à l\'aide des paramètres.</string>
+
 </resources>

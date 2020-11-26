@@ -9,7 +9,7 @@
     <string name="tester_debit">Speed Test</string>
     <string name="network">My Network</string>
     <string name="carte_couverture">Coverage Map</string>
-    <string name="apropos">About</string>
+    <string name="apropos">About Us</string>
     <string name="share">Share</string>
 
     //txt view
@@ -25,21 +25,26 @@
     <string name="desc_signal_poor">Performance will drop drastically</string>
 
     <string name="find_cell">Find nearest BTS</string>
-    <string name="hote_pb">There was a problem getting the location of the host</string>
-    <string name="Redmarrer_le_test">Restart the test</string>
-    <string name="Erreur_de_téléchargement">Download error ...</string>
-    <string name="Erreur_d_envoi">Error sending ...</string>
-    <string name="Erreur_ping">Ping error ...</string>
-    <string name="Sub_type">Network subtype :</string>
-    <string name="non_connecte">Not connected to the internet</string>
-    <string name="connecetd_wifi">Connected by Wi-Fi</string>
+    <string name="error_hote">There was a problem getting the location of the host.</string>
+    <string name="restart_test">Restart the test</string>
+    <string name="error_download">Download error ...</string>
+    <string name="error_upload">Upload error ...</string>
+    <string name="error_ping">Ping error ...</string>
     <string name="ping">PING</string>
     <string name="dowload">DOWNLOAD</string>
     <string name="upload">UPLOAD</string>
+    <string name="ping_cours">Ping in progress ...</string>
+    <string name="download_cours">Download in progress ...</string>
+    <string name="upload_cours">Upload in progress ...</string>
+
+    <string name="Sub_type">Network subtype :</string>
+    <string name="non_connecte">Not connected to the internet</string>
+    <string name="connecetd_wifi">Connected by Wi-Fi</string>
+
     //toast
     <string name="error_connection">No internet connection ...</string>
     <string name="check_connection">Check your Internet connection!</string>
-    <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality</string>
+    <string name="user_location_permission_explanation">This app needs location permissions in order to show its functionality.</string>
     <string name="user_location_permission_not_granted">You didn\'t grant location permissions.</string>
 
     //btn
@@ -52,8 +57,8 @@
     <string name="hoste_location">Host location: %s [Distance: %s km]</string>
 
     //alert
-    <string name="msg_alert_gps_1">In order to use the application properly you need to enable GPS of your device</string>
-    <string name="msg_alert_gps">You need to turn on GPS to add new results to the map</string>
+    <string name="msg_alert_gps_test">In order to use the application properly you need to enable GPS of your device.</string>
+    <string name="msg_alert_gps">You need to turn on GPS to add new results to the map.</string>
     <string name="alert_wifi_title">You are connected by Wi-Fi!</string>
     <string name="alert_wifi_text">Please activate your mobile data !</string>
     <string name="Permission_Denied">Permission Denied</string>
@@ -62,7 +67,7 @@
     <string name="txt_unknown_network">Unknown network</string>
     <string name="wating_location">Waiting for get location ...</string>
     //Toast
-    <string name="errorServer">Faild to connect with server. please try again</string>
+    <string name="errorServer">Faild to connect with server, Please try again.</string>
     //mapbox
     <string name="access_token" translatable="false">pk.eyJ1IjoiYXlhZGlraG91bG91ZCIsImEiOiJja2Q1dWthM3cwNGJpMnBzYzZpNnRqc2t4In0.Lmj_vPp5beqQhKW-2ktX0w</string>
     <string name="tts">You have %s and %s kilometer</string>
@@ -83,8 +88,26 @@
     <string name="error_test_debit">Without an internet connection, the app cannot perform a speed test.</string>
     <string name="error_map_coverage">Without internet connection, the app cannot display the coverage map.</string>
     <!--vous avez un volume de donnees possible d'exploiter :-->
+    <string name="error_connx_splashScreen">Without an Internet connection, you cannot use the application.</string>
     <string name="new_location">New lat: %1$s New longitude: %2$s</string>
     <string name="error_adresse">Please enter a valid address</string>
     <string name="bandwidth">The quality of the bandwidth :</string>
-
+    <string name="conditions">Conditions of Use</string>
+    <string name="Fonction">Features</string>
+    <string name="important">Important</string>
+    <string name="amelioration">Application Improvement and Notification</string>
+    <string name="copyright">Copyright</string>
+    <string name="txt_condition">The My Network application is accessible to all Orange customers.To be able to use all the features of the application, the user must meet the following conditions :</string>
+    <string name="txt_condition1">- To have a mobile internet offer.</string>
+    <string name="txt_condition2">- Have a compatible mobile terminal such as a smartphone or tablet.</string>
+    <string name="txt_features">The application allows the user to :</string>
+    <string name="txt_features1">- Learn about mobile networks and internet connection status.</string>
+    <string name="txt_features2">- Ask about the uptime of the internet connectivity.</string>
+    <string name="txt_features3">- Get real-time information on signal strength.</string>
+    <string name="txt_features4">- Carry out a speed test on the mobile network.</string>
+    <string name="txt_features5">- Consult, on a map, the Orange TN mobile coverage, and make a search on a specific geographical area.</string>
+    <string name="txt_important1">- The throughput measured via this application is the throughput available to the user at a given time on the Orange TN network. It is measured by the application taking into account the limitations related to the network and its load, the location and the equipment that this user uses by the measurement.</string>
+    <string name="txt_important2">- On some operating systems, the application does not recognize the type of Wi-Fi network used.</string>
+    <string name="txt_imprvement1">My network collects information about the use of the application and sends us this information for statistical analysis to improve the service we offer you. We collect data on signal strength, network, location and other device detectors.</string>
+    <string name="txt_imprvement2">The collection of this information also allows us to improve the relevance of the notification messages sent by the service. You may disable this process at any time using the settings.</string>
 </resources>

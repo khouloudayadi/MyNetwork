@@ -288,7 +288,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         init();
         initView();
-        checkNetwork();
+
 
         //mapview
         mapView.onCreate(savedInstanceState);
@@ -445,7 +445,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             share();
         }
         else if (id == R.id.nav_apropos) {
-           apropos();
+            startActivity(new Intent(HomeActivity.this,aboutUsActivity.class) );
         }
         else if (id == R.id.nav_carte_couverture) {
             startActivity(new Intent(HomeActivity.this,mapCoverageActivity.class) );
@@ -468,8 +468,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             e.toString();
         }
     }
-
-    private void apropos(){}
 
     private void network(){}
 
@@ -567,7 +565,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         map = mapboxMap;
-        this.map.setMinZoomPreference(8);
+        this.map.setMinZoomPreference(11);
         map.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -665,14 +663,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             start_lon = locationComponent.getLastKnownLocation().getLongitude();
             vitesse = locationComponent.getLastKnownLocation().getSpeed();
             timeStamp = String.valueOf(locationComponent.getLastKnownLocation().getTime());
-            /*Date date = new Date(locationComponent.getLastKnownLocation().getTime());
-             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-             datetime = dateFormat.format(date);*/
-
             reverseGeocode(Point.fromLngLat(end_lon, end_lat));
             getRoute(originPoint, destinationPoint);
             getTimeConnectivite(timeStamp,start_lat,start_lon,end_lat,end_lon,vitesse);
-            //cptOnMapClick = 0;
             return true;
         }
         return false;
@@ -1234,11 +1227,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         );
     }
 
+    @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     @SuppressWarnings( {"MissingPermission"})
     protected void onStart() {
         super.onStart();
+        checkNetwork();
         mapView.onStart();
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     @Override
@@ -1250,14 +1251,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onPause() {
-        TTS.stop();
-        mapView.onPause();
         super.onPause();
+        TTS.stop();
+        Common.cpt_no_conn=0;
+        Common.cpt_wifi=0;
+        compositeDisposable.clear();
+        mapView.onPause();
+
     }
 
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onStop() {
+        super.onStop();
         compositeDisposable.clear();
         handler.removeCallbacks(runnable);
         if(listen){
@@ -1266,20 +1272,17 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Common.cpt_no_conn = 0;
         Common.cpt_wifi = 0;
         mapView.onStop();
-        super.onStop();
+
     }
 
     @RequiresApi(api = JELLY_BEAN_MR1)
     @Override
     protected void onDestroy() {
-        compositeDisposable.clear();
-        handler.removeCallbacks(runnable);
+        super.onDestroy();
         Common.cpt_no_conn=0;
         Common.cpt_wifi=0;
-        if(listen){
-            telephonyManager.listen(ConnectionStateListener, PhoneStateListener.LISTEN_NONE);
-        }
-         super.onDestroy();
+        compositeDisposable.clear();
+
     }
 
     @Override

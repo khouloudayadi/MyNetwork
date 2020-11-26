@@ -9,17 +9,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.developer.kalert.KAlertDialog;
 import com.example.mynetwork.Common.Common;
 import com.example.mynetwork.DataBase.cellDataBase;
 import com.example.mynetwork.DataBase.cellDataSource;
@@ -44,7 +39,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import dmax.dialog.SpotsDialog;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -95,7 +89,20 @@ public class SplashScreen extends AppCompatActivity {
                                         else{
                                             if(activeNetworkInfo == null ) {
                                                 progressBar.setVisibility(View.GONE);
-                                                Toast.makeText(SplashScreen.this,R.string.check_connection,Toast.LENGTH_LONG).show();
+                                                Toast.makeText(SplashScreen.this,R.string.error_connx_splashScreen,Toast.LENGTH_LONG).show();
+                                                Thread time = new Thread() {
+                                                    public void run() {
+                                                        try {
+                                                            sleep(4000);
+                                                        }
+                                                        catch (InterruptedException e)
+                                                        {}
+                                                        finally {
+                                                            finish();
+                                                        }
+                                                    }
+                                                };
+                                                time.start();
                                             }
                                             else{
                                                 try {
@@ -146,7 +153,15 @@ public class SplashScreen extends AppCompatActivity {
                                                                         throwable -> {
                                                                             Log.d("getCellDB", throwable.getMessage());
                                                                             Toast.makeText(SplashScreen.this,R.string.errorServer,Toast.LENGTH_LONG).show();
-                                                                            finish();
+                                                                            Thread time = new Thread() {
+                                                                                public void run() {
+                                                                                    try {sleep(4000);}
+                                                                                    catch (InterruptedException e){}
+                                                                                    finally {finish();}
+                                                                                }
+                                                                            };
+                                                                            time.start();
+
                                                                         }
                                                                 )
                                                         );
@@ -209,6 +224,16 @@ public class SplashScreen extends AppCompatActivity {
         activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
     }
 
+    protected void onPause() {
+        super.onPause();
+    }
 
-
+    @Override
+    protected void onDestroy() {
+        if(compositeDisposable !=null){
+            compositeDisposable.clear();
+        }
+        super.onDestroy();
+    }
 }
+

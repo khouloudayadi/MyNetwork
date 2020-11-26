@@ -23,7 +23,6 @@ import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 
-import com.developer.kalert.KAlertDialog;
-import com.example.mynetwork.Common.Common;
 import com.example.mynetwork.TestDebit.GetSpeedTestHostsHandler;
 import com.example.mynetwork.TestDebit.HttpDownloadTest;
 import com.example.mynetwork.TestDebit.HttpUploadTest;
@@ -99,16 +96,9 @@ public class testDebitActivity extends AppCompatActivity {
     ImageView barImageView;
     @BindView(R.id.startButton)
     Button startButton;
+    @BindView(R.id.txt_state)
+    TextView txt_state;
     @BindView(R.id.layout_sans_conx_test) LinearLayout layout_sans_conx;
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        startButton.setText(R.string.btn_test);
-        pingTextView.setText("0 ms");
-        downloadTextView.setText("0 Mbps");
-        uploadTextView.setText("0 Mbps");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,7 +192,7 @@ public class testDebitActivity extends AppCompatActivity {
         //enable GPS
         alertDialogGPS = new AlertDialog.Builder(this)
                 .setTitle(R.string.title_alert_gps)
-                .setMessage(R.string.msg_alert_gps_1)
+                .setMessage(R.string.msg_alert_gps_test)
                 .setPositiveButton(R.string.ok, (dialog, i) -> {
                     startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 })
@@ -289,7 +279,7 @@ public class testDebitActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        startButton.setTextSize(13);
+                        startButton.setTextSize(15);
                         startButton.setText(R.string.meilleur_serveur);
                     }
                 });
@@ -306,7 +296,6 @@ public class testDebitActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), R.string.error_connection, Toast.LENGTH_LONG).show();
                                 //Restart Test
                                 startButton.setEnabled(true);
-                                startButton.setTextSize(16);
                                 startButton.setText(R.string.btn_redémarrer_le_test);
                                 dialog.dismiss();
                             }
@@ -357,8 +346,8 @@ public class testDebitActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 Log.d("Error Host", "There was a problem in getting Host Location. Try again later");
-                                startButton.setTextSize(12);
-                                startButton.setText(R.string.hote_pb);
+                                startButton.setTextSize(13);
+                                startButton.setText(R.string.error_hote);
                                 dialog.dismiss();
                             }
                         });
@@ -367,7 +356,7 @@ public class testDebitActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            startButton.setTextSize(13);
+                            startButton.setTextSize(15);
                             startButton.setText(String.format("Host Location: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
                         }
                     });
@@ -393,6 +382,7 @@ public class testDebitActivity extends AppCompatActivity {
                     dialog.dismiss();
                     //Tests
                     while (true) {
+
                         if (!pingTestStarted) {
                             pingTest.run();
                             pingTestStarted = true;
@@ -411,12 +401,14 @@ public class testDebitActivity extends AppCompatActivity {
                         if (pingTestFinished) {
                             //Failure
                             if (pingTest.getAvgRtt() == 0) {
-                                pingTextView.setText(R.string.Erreur_ping);
+                                txt_state.setText("");
+                                pingTextView.setText(R.string.error_ping);
                             } else {
                                 //Success
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        txt_state.setText("");
                                         pingTextView.setText(dec.format(pingTest.getAvgRtt()) + " ms");
 
                                     }
@@ -426,6 +418,7 @@ public class testDebitActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    txt_state.setText(R.string.ping_cours);
                                     pingTextView.setText(dec.format(pingTest.getInstantRtt()) + " ms");
                                 }
                             });
@@ -436,12 +429,15 @@ public class testDebitActivity extends AppCompatActivity {
                             if (downloadTestFinished) {
                                 //Failure
                                 if (downloadTest.getFinalDownloadRate() == 0) {
-                                    downloadTextView.setText(R.string.Erreur_de_téléchargement);
-                                } else {
+                                    txt_state.setText("");
+                                    downloadTextView.setText(R.string.error_download);
+                                }
+                                else {
                                     //Success
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            txt_state.setText("");
                                             downloadTextView.setText(dec.format(downloadTest.getFinalDownloadRate()) + " Mbps");
                                         }
                                     });
@@ -452,13 +448,13 @@ public class testDebitActivity extends AppCompatActivity {
                                 downloadRateList.add(downloadRate);
                                 position = getPositionByRate(downloadRate);
                                 runOnUiThread(new Runnable() {
-
                                     @Override
                                     public void run() {
                                         rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                                         rotate.setInterpolator(new LinearInterpolator());
                                         rotate.setDuration(100);
                                         barImageView.startAnimation(rotate);
+                                        txt_state.setText(R.string.download_cours);
                                         downloadTextView.setText(dec.format(downloadRate) + " Mbps");
 
                                     }
@@ -475,12 +471,14 @@ public class testDebitActivity extends AppCompatActivity {
                             if (uploadTestFinished) {
                                 //Failure
                                 if (uploadTest.getFinalUploadRate() == 0) {
-                                    System.out.println(R.string.Erreur_d_envoi);
+                                    txt_state.setText("");
+                                    uploadTextView.setText(R.string.error_upload);
                                 } else {
                                     //Success
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            txt_state.setText("");
                                             uploadTextView.setText(dec.format(uploadTest.getFinalUploadRate()) + " Mbps");
                                         }
                                     });
@@ -499,6 +497,7 @@ public class testDebitActivity extends AppCompatActivity {
                                         rotate.setInterpolator(new LinearInterpolator());
                                         rotate.setDuration(100);
                                         barImageView.startAnimation(rotate);
+                                        txt_state.setText(R.string.upload_cours);
                                         uploadTextView.setText(dec.format(uploadTest.getInstantUploadRate()) + " Mbps");
                                     }
 
@@ -512,7 +511,6 @@ public class testDebitActivity extends AppCompatActivity {
                         if (pingTestFinished && downloadTestFinished && uploadTest.isFinished()) {
                             break;
                         }
-
                         if (pingTest.isFinished()) {
                             pingTestFinished = true;
                         }
@@ -540,18 +538,31 @@ public class testDebitActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             startButton.setEnabled(true);
-                            startButton.setTextSize(16);
-                            startButton.setText(R.string.Redmarrer_le_test);
+                            startButton.setTextSize(18);
+                            txt_state.setText("");
+                            startButton.setText(R.string.restart_test);
                         }
                     });
                 }
             }
         }).start();
-
-
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(runnable);
+        startButton.setText(R.string.btn_test);
+        pingTextView.setText("0 ms");
+        downloadTextView.setText("0 Mbps");
+        uploadTextView.setText("0 Mbps");
+    }
 
-
+    @Override
+    protected void onPause() {
+        handler.removeCallbacks(runnable);
+        getSpeedTestHostsHandler = null;
+        super.onPause();
+    }
 
 }

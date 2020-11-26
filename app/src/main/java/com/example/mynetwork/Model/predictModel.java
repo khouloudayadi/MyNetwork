@@ -2,7 +2,7 @@ package com.example.mynetwork.Model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class predict {
+public class predictModel {
     @SerializedName("result")
     private String result;
     @SerializedName("message")

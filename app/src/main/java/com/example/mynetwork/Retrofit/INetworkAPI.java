@@ -3,7 +3,7 @@ package com.example.mynetwork.Retrofit;
 
 import com.example.mynetwork.Model.CellModel;
 import com.example.mynetwork.Model.addCellModel;
-import com.example.mynetwork.Model.predict;
+import com.example.mynetwork.Model.predictModel;
 import com.google.gson.JsonObject;
 
 import io.reactivex.Observable;
@@ -16,7 +16,7 @@ public interface INetworkAPI {
 
     @Headers({"Content-Type:application/json"})
     @POST("predict")
-    Observable<predict> getPredictTime(@Body JsonObject precictTime);
+    Observable<predictModel> getPredictTime(@Body JsonObject precictTime);
 
     @GET("getCell")
     Observable<CellModel> getCell();
