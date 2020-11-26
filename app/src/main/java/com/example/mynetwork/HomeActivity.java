@@ -789,7 +789,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                             if(predict.isSuccess()){
                                 double time_sec = Double.parseDouble(predict.getResult());
                                 testDebit(start_lat,start_lon,time_sec);
-                                cardView_time.setVisibility(View.VISIBLE);
+
 
                                 double dist = Double.parseDouble(predict.getDistance());
                                 txt_distance_connectivite.setText(String.format("( %s km )", new DecimalFormat("#.##").format(dist / 1000)));
@@ -806,6 +806,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                                     txt_time_connectivite.setText(new StringBuilder(String.valueOf(time_min)).append(" min"));
                                     txt_temps= String.valueOf(new StringBuilder(String.valueOf(time_min)).append(" minute"));
                                 }
+                                dialog.dismiss();
+                                cardView_time.setVisibility(View.VISIBLE);
                             }
                             else{
                                 dialog.dismiss();
@@ -1438,7 +1440,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
                     //Test terminé
                     if (downloadTestFinished && uploadTest.isFinished()) {
-                        dialog.dismiss();
+                        //dialog.dismiss();
                         break;
                     }
 
